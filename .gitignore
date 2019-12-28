@@ -1,0 +1,11 @@
+*.swp
+*.o
+location.hh
+position.hh
+stack.hh
+lexer.yy.cc
+parser.output
+parser.tab.cc
+parser.tab.hh
+kompilator
+input.txt
