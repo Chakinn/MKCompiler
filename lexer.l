@@ -23,9 +23,50 @@ using token = FB::Parser::token;
     yylval = lval;
 %}
 
-\n
+[ \t\n] //skip whitespaces and newlines
 
-. {yylval->build<std::string>(yytext);return token::CHAR;}
+-?[0-9]+ {return token::NUM;}
+[_a-z]+ {return token::PIDENTIFIER;}
+
+DECLARE {return token::DECLARE;}
+BEGIN {return token::P_BEGIN;}
+END {return token::P_END;}
+ASSIGN {return token::ASSIGN;}
+
+IF {return token::IF;}
+THEN {return token::THEN;}
+ELSE {return token::ELSE;}
+ENDIF {return token::ENDIF;}
+
+WHILE {return token::WHILE;}
+DO {return token::DO;}
+ENDWHILE {return token::ENDWHILE;}
+ENDDO {return token::ENDDO;}
+
+FOR {return token::FOR;}
+FROM {return token::FROM;}
+TO {return token::TO;}
+DOWNTO {return token::DOWNTO;}
+ENDFOR {return token::ENDFOR;}
+
+READ {return token::READ;}
+WRITE {return token::WRITE;}
+
+PLUS {return token::PLUS;}
+MINUS {return token::MINUS;}
+TIMES {return token::TIMES;}
+DIV {return token::DIV;}
+MOD {return token::MOD;}
+
+EQ {return token::EQ;}
+NEQ {return token::NEQ;}
+LE {return token::LE;}
+GE {return token::GE;}
+LEQ {return token::LEQ;}
+GEQ {return token::GEQ;}
+
+. {return yytext[0];}
+<<EOF>> {return token::END_FILE;}
 
 %%
 
