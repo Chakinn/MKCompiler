@@ -33,7 +33,7 @@ BEGIN {return token::P_BEGIN;}
 END {return token::P_END;}
 ASSIGN {return token::ASSIGN;}
 
-IF {return token::IF;}
+IF {printf("lexif\n");return token::IF;}
 THEN {return token::THEN;}
 ELSE {return token::ELSE;}
 ENDIF {return token::ENDIF;}

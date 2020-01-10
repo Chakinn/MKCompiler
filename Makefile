@@ -1,10 +1,9 @@
 CC    ?= gcc
 CXX   ?= g++
 
-EXE = kompilator
+EXE = bin/kompilator
 
 CDEBUG = -g -Wall
-
 CXXDEBUG = -g -Wall
 
 CSTD = -std=c99
@@ -13,36 +12,50 @@ CXXSTD = -std=c++14
 CFLAGS = -Wno-deprecated-register -O0  $(CDEBUG) $(CSTD) 
 CXXFLAGS = -Wno-deprecated-register -O0  $(CXXDEBUG) $(CXXSTD)
 
+DIRS = obj bin
 
-CPPOBJ = main driver
-SOBJ =  parser lexer
+OBJPATH = obj/
+FRONTPATH = src/front/
+BACKPATH = src/back/
 
-FILES = $(addsuffix .cpp, $(CPPOBJ))
+FBELEMENTS =  parser lexer
 
-OBJS  = $(addsuffix .o, $(CPPOBJ))
+FRONTELEMENTS = driver main
+FRONTFILES = $(addsuffix .cpp, $(addprefix src/front/, $(FRONTELEMENTS)))
 
+BACKELEMENTS = compiler
+BACKFILES = $(addsuffix .cpp, $(addprefix src/back/, $(BACKELEMENTS)))
 
-#CLEANLIST =  $(addsuffix .o, $(OBJ)) $(OBJS) \
-				 parser.tab.cc parser.tab.hh \
-				 location.hh position.hh \
-			    stack.hh parser.o \
-				 lexer.o lexer.yy.cc $(EXE)\
-
-all: wc
-
-wc: $(FILES)
-	$(MAKE) $(SOBJ)
-	$(MAKE) $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJS) parser.o lexer.o $(LIBS)
+OBJS  = $(addprefix $(OBJPATH), $(addsuffix .o, $(FBELEMENTS) $(FRONTELEMENTS) $(BACKELEMENTS)))
 
 
-parser: parser.yy
-	bison -d parser.yy
-	$(CXX) $(CXXFLAGS) -c -o parser.o parser.tab.cc
+all:
+	$(info $(DIRS))
+	$(info $(shell mkdir -p $(DIRS)))
+	$(MAKE) $(FBELEMENTS)
+	$(MAKE) $(FRONTELEMENTS)
+	$(MAKE) $(BACKELEMENTS)
+	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJS) $(LIBS)
 
-lexer: lexer.l
-	flex --outfile=lexer.yy.cc  $<
-	$(CXX)  $(CXXFLAGS) -c lexer.yy.cc -o lexer.o
+
+parser: $(FRONTPATH)parser.yy
+	bison -d -v -o $(FRONTPATH)parser.tab.cc $(FRONTPATH)parser.yy
+	$(CXX) $(CXXFLAGS) -c -o $(OBJPATH)parser.o $(FRONTPATH)parser.tab.cc
+
+lexer: $(FRONTPATH)lexer.l
+	flex --outfile=$(FRONTPATH)lexer.yy.cc  $<
+	$(CXX)  $(CXXFLAGS) -c $(FRONTPATH)lexer.yy.cc -o $(OBJPATH)lexer.o
+
+driver: parser lexer
+	$(CXX)  $(CXXFLAGS) -c -o $(OBJPATH)driver.o $(BACKFILES)
+
+compiler: driver
+	$(CXX)  $(CXXFLAGS) -c -o $(OBJPATH)compiler.o $(FRONTPATH)driver.cpp
+
+main:
+	$(CXX)  $(CXXFLAGS) -c -o $(OBJPATH)main.o $(FRONTPATH)main.cpp
+
+
 
 
 

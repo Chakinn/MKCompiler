@@ -81,13 +81,14 @@
 %token GEQ
 
 
+
 %locations
 
 %%
 
 program
-    : DECLARE declarations P_BEGIN commands P_END
-    | P_BEGIN commands P_END
+    : DECLARE declarations P_BEGIN commands P_END {return 0;}
+    | P_BEGIN commands P_END {return 0;}
     ;
 
 declarations
@@ -103,20 +104,20 @@ commands
     ;
 
 command 
-    : identifier ASSIGN expression';'
-    | IF condition THEN commands ELSE commands ENDIF
-    | IF condition THEN commands ENDIF
-    | WHILE condition DO commands ENDWHILE
-    | DO commands WHILE condition ENDDO
-    | FOR PIDENTIFIER FROM value TO value DO commands ENDFOR
-    | FOR PIDENTIFIER FROM value DOWNTO value DO commands ENDFOR
-    | READ identifier';'
-    | WRITE value';'
+    : identifier ASSIGN expression';' {std::cout<<"assign\n";}
+    | IF condition THEN commands ELSE commands ENDIF {std::cout<<"ifelse\n";}
+    | IF condition THEN commands ENDIF  {std::cout<<"if\n";}
+    | WHILE condition DO commands ENDWHILE  {std::cout<<"whiledo\n";}
+    | DO commands WHILE condition ENDDO {std::cout<<"dowhile\n";}
+    | FOR PIDENTIFIER FROM value TO value DO commands ENDFOR {std::cout<<"forto\n";}
+    | FOR PIDENTIFIER FROM value DOWNTO value DO commands ENDFOR {std::cout<<"fordownto\n";}
+    | READ identifier';' {std::cout<<"read\n";}
+    | WRITE value';' {std::cout<<"write\n";}
     ;
 
 expression
-    : value
-    | value PLUS value
+    : value 
+    | value PLUS value {std::cout<<"plus\n";}
     | value MINUS value
     | value TIMES value
     | value DIV value
@@ -124,12 +125,12 @@ expression
     ;
 
 condition
-    : value EQ value
-    : value NEQ value
-    : value LE value
-    : value GE value
-    : value LEQ value
-    : value GEQ value
+    : value EQ value {std::cout<<"eq\n";}
+    | value NEQ value 
+    | value LE value
+    | value GE value
+    | value LEQ value
+    | value GEQ value
     ;
 
 value
