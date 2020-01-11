@@ -23,39 +23,41 @@ FBELEMENTS =  parser lexer
 FRONTELEMENTS = driver main
 FRONTFILES = $(addsuffix .cpp, $(addprefix src/front/, $(FRONTELEMENTS)))
 
+HANDLINGELEMENTS = symbol handler 
+HANDLINGFILES = $(addsuffix .cpp, $(addprefix src/handling/, $(HANDLINGELEMETS)))
+
 BACKELEMENTS = compiler
 BACKFILES = $(addsuffix .cpp, $(addprefix src/back/, $(BACKELEMENTS)))
 
-OBJS  = $(addprefix $(OBJPATH), $(addsuffix .o, $(FBELEMENTS) $(FRONTELEMENTS) $(BACKELEMENTS)))
+OBJS  = $(addprefix $(OBJPATH), $(addsuffix .o, $(FBELEMENTS) $(FRONTELEMENTS) $(BACKELEMENTS) $(HANDLINGELEMENTS)))
 
 
-all:
-	$(info $(DIRS))
-	$(info $(shell mkdir -p $(DIRS)))
-	$(MAKE) $(FBELEMENTS)
-	$(MAKE) $(FRONTELEMENTS)
-	$(MAKE) $(BACKELEMENTS)
-	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJS) $(LIBS)
+all: $(EXE)
 
+$(EXE): $(OBJS)
+	g++ -o $(EXE) $(OBJS)
 
-parser: $(FRONTPATH)parser.yy
-	bison -d -v -o $(FRONTPATH)parser.tab.cc $(FRONTPATH)parser.yy
+obj/%.o: src/front/%.cpp
+	g++ -c $< -o $@
+
+obj/%.o: src/handling/%.cpp
+	g++ -c $< -o $@
+
+obj/%.o: src/back/%.cpp
+	g++ -c $< -o $@
+
+obj/parser.o: $(FRONTPATH)parser.tab.cc
 	$(CXX) $(CXXFLAGS) -c -o $(OBJPATH)parser.o $(FRONTPATH)parser.tab.cc
 
-lexer: $(FRONTPATH)lexer.l
-	flex --outfile=$(FRONTPATH)lexer.yy.cc  $<
+$(FRONTPATH)parser.tab.cc : $(FRONTPATH)parser.yy
+	bison -d -v -o $(FRONTPATH)parser.tab.cc $(FRONTPATH)parser.yy
+
+obj/lexer.o: $(FRONTPATH)lexer.yy.cc
 	$(CXX)  $(CXXFLAGS) -c $(FRONTPATH)lexer.yy.cc -o $(OBJPATH)lexer.o
-
-driver: parser lexer
-	$(CXX)  $(CXXFLAGS) -c -o $(OBJPATH)driver.o $(BACKFILES)
-
-compiler: driver
-	$(CXX)  $(CXXFLAGS) -c -o $(OBJPATH)compiler.o $(FRONTPATH)driver.cpp
-
-main:
-	$(CXX)  $(CXXFLAGS) -c -o $(OBJPATH)main.o $(FRONTPATH)main.cpp
-
-
+	
+$(FRONTPATH)lexer.yy.cc: $(FRONTPATH)lexer.l
+	flex --outfile=$@ $<
+	
 
 
 

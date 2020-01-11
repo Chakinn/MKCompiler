@@ -29,18 +29,22 @@
     #include <iostream>
     #include <cstdlib>
     #include <fstream>
+    #include <string>
    
     #include "driver.hpp"
+    #include "../handling/handler.hpp"
+
+    Handler handler;
 
     #undef yylex
     #define yylex scanner.yylex
 }
 
-%define api.value.type variant
+%define api.value.type {std::string}
 %define parse.assert
 
 %token END_FILE
-%token NUM
+%token  NUM
 %token PIDENTIFIER
 
 %token DECLARE
@@ -92,9 +96,9 @@ program
     ;
 
 declarations
-    : declarations ',' PIDENTIFIER
+    : declarations ',' PIDENTIFIER {handler.handleVarDeclaration($3);}
     | declarations ',' PIDENTIFIER'('NUM':'NUM')'
-    | PIDENTIFIER
+    | PIDENTIFIER {handler.handleVarDeclaration($1);}
     | PIDENTIFIER'('NUM':'NUM')'
     ;
 
@@ -104,7 +108,7 @@ commands
     ;
 
 command 
-    : identifier ASSIGN expression';' {std::cout<<"assign\n";}
+    : identifier ASSIGN expression';'
     | IF condition THEN commands ELSE commands ENDIF {std::cout<<"ifelse\n";}
     | IF condition THEN commands ENDIF  {std::cout<<"if\n";}
     | WHILE condition DO commands ENDWHILE  {std::cout<<"whiledo\n";}

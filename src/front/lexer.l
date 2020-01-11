@@ -1,5 +1,6 @@
 %{
 #include "scanner.hpp"
+#include <string>
 #undef  YY_DECL
 #define YY_DECL int FB::Scanner::yylex( FB::Parser::semantic_type* const lval, FB::Parser::location_type* loc )
 
@@ -25,15 +26,15 @@ using token = FB::Parser::token;
 
 [ \t\n] //skip whitespaces and newlines
 
--?[0-9]+ {return token::NUM;}
-[_a-z]+ {return token::PIDENTIFIER;}
+-?[0-9]+ {*yylval = yytext;return token::NUM;}
+[_a-z]+ {*yylval = yytext;return token::PIDENTIFIER;}
 
 DECLARE {return token::DECLARE;}
 BEGIN {return token::P_BEGIN;}
 END {return token::P_END;}
 ASSIGN {return token::ASSIGN;}
 
-IF {printf("lexif\n");return token::IF;}
+IF {return token::IF;}
 THEN {return token::THEN;}
 ELSE {return token::ELSE;}
 ENDIF {return token::ENDIF;}
