@@ -2,23 +2,36 @@
 
 #include <string>
 #include <unordered_map>
+#include <memory>
+#include <utility>
+#include <iostream>
 
 #include "symbol.hpp"
+#include "symbol_table.hpp"
+#include "memory_manager.hpp"
+#include "expression.hpp"
 
 class Handler {
-    std::unordered_map<std::string, Symbol*> symbolTable;
+    std::unordered_map<std::string, Node*> nodeTable;
+    SymbolTable* symbolTable;
+    MemoryManager* memoryManager;
+    int nodeCounter = 0;
 
 public:
-    void handleVarDeclaration(std::string identifier);
-    void handleArrayDeclaration(std::string identifier, long long startIndex, long long endIndex);
-    void handleAssign(std::string identifier, std::string value1, std::string value2);
-    void handleIf();
-    void handleWhile();
-    void handleFor(std::string identifier);
-    void handleRead(std::string identifier);
-    void handleWrite(std::string value);
-    void handleExpression(std::string value1, std::string op, std::string value2);
-    void handleCondition(std::string value1, std::string op, std::string value2);
+    Handler();
+    ~Handler();
+    std::string handleVarDeclaration(std::string identifier);
+    std::string handleArrayDeclaration(std::string identifier, std::string startIndex, std::string endIndex);
+    std::string handleAssign(std::string identifier, std::string expressonIdentifier);
+    std::string handleIf();
+    std::string handleWhile();
+    std::string handleFor(std::string identifier);
+    std::string handleRead(std::string identifier);
+    std::string handleWrite(std::string value);
+    std::string handleExpression(std::string value1, std::string op, std::string value2);
+    std::string handleCondition(std::string value1, std::string op, std::string value2);
 private:
-    void logError(std::string errorMessage, int lineNumber);
+    void logError(std::string const& errorMessage, int lineNumber);
+    long long nextAddress();
+    std::string nodeIdentifier();
 };

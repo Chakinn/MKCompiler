@@ -23,7 +23,7 @@ FBELEMENTS =  parser lexer
 FRONTELEMENTS = driver main
 FRONTFILES = $(addsuffix .cpp, $(addprefix src/front/, $(FRONTELEMENTS)))
 
-HANDLINGELEMENTS = symbol handler 
+HANDLINGELEMENTS = symbol memory_manager symbol_table node expression  handler 
 HANDLINGFILES = $(addsuffix .cpp, $(addprefix src/handling/, $(HANDLINGELEMETS)))
 
 BACKELEMENTS = compiler
@@ -35,16 +35,16 @@ OBJS  = $(addprefix $(OBJPATH), $(addsuffix .o, $(FBELEMENTS) $(FRONTELEMENTS) $
 all: $(EXE)
 
 $(EXE): $(OBJS)
-	g++ -o $(EXE) $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(EXE) $(OBJS)
 
 obj/%.o: src/front/%.cpp
-	g++ -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 obj/%.o: src/handling/%.cpp
-	g++ -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 obj/%.o: src/back/%.cpp
-	g++ -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 obj/parser.o: $(FRONTPATH)parser.tab.cc
 	$(CXX) $(CXXFLAGS) -c -o $(OBJPATH)parser.o $(FRONTPATH)parser.tab.cc

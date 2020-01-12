@@ -97,7 +97,7 @@ program
 
 declarations
     : declarations ',' PIDENTIFIER {handler.handleVarDeclaration($3);}
-    | declarations ',' PIDENTIFIER'('NUM':'NUM')'
+    | declarations ',' PIDENTIFIER'('NUM':'NUM')' {handler.handleArrayDeclaration($3,$5,$7);}
     | PIDENTIFIER {handler.handleVarDeclaration($1);}
     | PIDENTIFIER'('NUM':'NUM')'
     ;
@@ -108,33 +108,33 @@ commands
     ;
 
 command 
-    : identifier ASSIGN expression';'
-    | IF condition THEN commands ELSE commands ENDIF {std::cout<<"ifelse\n";}
-    | IF condition THEN commands ENDIF  {std::cout<<"if\n";}
-    | WHILE condition DO commands ENDWHILE  {std::cout<<"whiledo\n";}
-    | DO commands WHILE condition ENDDO {std::cout<<"dowhile\n";}
-    | FOR PIDENTIFIER FROM value TO value DO commands ENDFOR {std::cout<<"forto\n";}
-    | FOR PIDENTIFIER FROM value DOWNTO value DO commands ENDFOR {std::cout<<"fordownto\n";}
-    | READ identifier';' {std::cout<<"read\n";}
-    | WRITE value';' {std::cout<<"write\n";}
+    : identifier ASSIGN expression';' {$$ = handler.handleAssign($1,$3);}
+    | IF condition THEN commands ELSE commands ENDIF 
+    | IF condition THEN commands ENDIF  
+    | WHILE condition DO commands ENDWHILE  
+    | DO commands WHILE condition ENDDO 
+    | FOR PIDENTIFIER FROM value TO value DO commands ENDFOR 
+    | FOR PIDENTIFIER FROM value DOWNTO value DO commands ENDFOR 
+    | READ identifier';' 
+    | WRITE value';' 
     ;
 
 expression
-    : value 
-    | value PLUS value {std::cout<<"plus\n";}
-    | value MINUS value
-    | value TIMES value
-    | value DIV value
-    | value MOD value
+    : value {$$ = handler.handleExpression($1,"","");}
+    | value PLUS value {$$ = handler.handleExpression($1,"PLUS",$3);}
+    | value MINUS value {$$ = handler.handleExpression($1,"MINUS",$3);}
+    | value TIMES value {$$ = handler.handleExpression($1,"TIMES",$3);}
+    | value DIV value {$$ = handler.handleExpression($1,"DIV",$3);}
+    | value MOD value {$$ = handler.handleExpression($1,"MOD",$3);}
     ;
 
 condition
-    : value EQ value {std::cout<<"eq\n";}
-    | value NEQ value 
-    | value LE value
-    | value GE value
-    | value LEQ value
-    | value GEQ value
+    : value EQ value {handler.handleCondition($1, "EQ", $3);}
+    | value NEQ value {handler.handleCondition($1, "NEQ", $3);}
+    | value LE value {handler.handleCondition($1, "LE", $3);}
+    | value GE value {handler.handleCondition($1, "GE", $3);}
+    | value LEQ value {handler.handleCondition($1, "LEQ", $3);}
+    | value GEQ value {handler.handleCondition($1, "GEQ", $3);}
     ;
 
 value
