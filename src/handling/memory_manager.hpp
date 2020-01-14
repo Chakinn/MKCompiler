@@ -1,12 +1,14 @@
 #pragma once
 
 #include <unordered_map>
+#include <vector>
 #include <sstream>
 #include <string>
 
 class MemoryManager {
     std::unordered_map<long long, long long> memoryMap;
     long long addressCounter = 1000;
+    std::vector<std::string> code;
 
 public:
     MemoryManager();
@@ -14,6 +16,7 @@ public:
 
     long long allocateVar();
     long long allocateArray(long long size);
-    std::pair<long long,std::string> generateNumber(long long number);
-    std::string generateFirstNumbers(int n);
+    long long generateNumber(long long number);
+    void generateFirstNumbers(int n);
+    std::vector<std::string> getCode();
 };

@@ -1,5 +1,10 @@
 #pragma once
 
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <vector>
+
 #include "symbol_table.hpp"
 
 class Node {
@@ -8,5 +13,5 @@ protected:
 public:
     Node(SymbolTable* symbolTable);
     ~Node(){};
-    virtual std::string getCode(){return "code";};
+    virtual std::vector<std::string> getCode(){std::vector<std::string> a; return a;};
 };

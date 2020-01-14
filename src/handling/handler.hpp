@@ -2,19 +2,30 @@
 
 #include <string>
 #include <unordered_map>
+#include <stack>
+#include <deque>
 #include <memory>
 #include <utility>
 #include <iostream>
+#include <fstream>
+
 
 #include "symbol.hpp"
 #include "symbol_table.hpp"
 #include "memory_manager.hpp"
 #include "expression.hpp"
+#include "assignment.hpp"
+#include "code_block.hpp"
+#include "condition.hpp"
+#include "branch.hpp"
+#include "../back/optimizer.hpp"
 
 class Handler {
     std::unordered_map<std::string, Node*> nodeTable;
     SymbolTable* symbolTable;
     MemoryManager* memoryManager;
+    Optimizer optimizer;
+    std::stack<CodeBlock*> codeBlocks;
     int nodeCounter = 0;
 
 public:
@@ -23,13 +34,17 @@ public:
     std::string handleVarDeclaration(std::string identifier);
     std::string handleArrayDeclaration(std::string identifier, std::string startIndex, std::string endIndex);
     std::string handleAssign(std::string identifier, std::string expressonIdentifier);
-    std::string handleIf();
+    std::string handleIf(std::string conditionIdentifier);
     std::string handleWhile();
     std::string handleFor(std::string identifier);
     std::string handleRead(std::string identifier);
     std::string handleWrite(std::string value);
     std::string handleExpression(std::string value1, std::string op, std::string value2);
     std::string handleCondition(std::string value1, std::string op, std::string value2);
+    std::string handleCommand(std::string nodeId);
+    std::string handleFirstCommand(std::string nodeId);
+    void handleProgram();
+
 private:
     void logError(std::string const& errorMessage, int lineNumber);
     long long nextAddress();

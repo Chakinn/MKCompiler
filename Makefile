@@ -23,10 +23,10 @@ FBELEMENTS =  parser lexer
 FRONTELEMENTS = driver main
 FRONTFILES = $(addsuffix .cpp, $(addprefix src/front/, $(FRONTELEMENTS)))
 
-HANDLINGELEMENTS = symbol memory_manager symbol_table node expression  handler 
+HANDLINGELEMENTS = symbol memory_manager symbol_table node expression assignment branch condition code_block handler 
 HANDLINGFILES = $(addsuffix .cpp, $(addprefix src/handling/, $(HANDLINGELEMETS)))
 
-BACKELEMENTS = compiler
+BACKELEMENTS = optimizer
 BACKFILES = $(addsuffix .cpp, $(addprefix src/back/, $(BACKELEMENTS)))
 
 OBJS  = $(addprefix $(OBJPATH), $(addsuffix .o, $(FBELEMENTS) $(FRONTELEMENTS) $(BACKELEMENTS) $(HANDLINGELEMENTS)))

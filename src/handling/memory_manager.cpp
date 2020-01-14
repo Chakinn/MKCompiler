@@ -1,6 +1,9 @@
 #include "memory_manager.hpp"
 
-MemoryManager::MemoryManager(){}
+
+MemoryManager::MemoryManager(){
+    generateFirstNumbers(5);
+}
 
 MemoryManager::~MemoryManager(){}
 
@@ -14,17 +17,14 @@ long long MemoryManager::allocateArray(long long size) {
     return addressCounter;
 }
 
-std::pair<long long,std::string> MemoryManager::generateNumber(long long number) {
-    std::stringstream code;
+long long MemoryManager::generateNumber(long long number) {
 
     // if it was generated earlier, return it
     try {
         long long add = memoryMap.at(number);
-        return std::pair<long long, std::string>(add,"");
+        return add;
     }
-    catch(const std::out_of_range) {
-
-    }
+    catch(const std::out_of_range) {}
     
     long long currentNumber = 1;
     long long ONE;
@@ -35,40 +35,48 @@ std::pair<long long,std::string> MemoryManager::generateNumber(long long number)
 
     }
     
-    //code << "SUB 0";
-    //code << "INC";
-    //code << "STORE 101";
+    //code.push_back( "SUB 0";
+    //code.push_back( "INC";
+    //code.push_back( "STORE 101";
     while (currentNumber*2 < number) 
     {
-        currentNumber = currentNumber << 1;
-        code << "SHIFT " << ONE << "\n";
+        currentNumber = currentNumber + 1;
+        code.push_back( "SHIFT " + std::to_string(ONE));
     }
     while(currentNumber < number) {
         currentNumber++;
-        code << "INC" << "\n";
+        code.push_back( "INC");
     }
 
     addressCounter++;
-    code << "STORE " << addressCounter << "\n";
+    code.push_back( "STORE " + std::to_string(addressCounter));
     
-
-    return std::pair<long long, std::string>(addressCounter, code.str());
+    return addressCounter;
 }
 
-std::string MemoryManager::generateFirstNumbers(int n) {
-    std::stringstream code;
-
-    code << "SUB 0" << "\n";
+void MemoryManager::generateFirstNumbers(int n) {
+    code.push_back( "SUB 0");
 
     for(int i = 1; i <= n; i++) {
         addressCounter++;
-        code << "INC" << "\n";
-        code << "STORE " << addressCounter << "\n";
+        code.push_back( "INC");
+        code.push_back( "STORE " + std::to_string(addressCounter));
         memoryMap.insert(std::pair<long long, long long>(i,addressCounter));
     }
 
-    return code.str();
-    
+    long long ONE = memoryMap.at(1);
+
+
+    code.push_back( "LOAD " + std::to_string(ONE));
+    for(int i =1; i<=n; i++) {
+        addressCounter++;
+        code.push_back( "SHIFT " + std::to_string(ONE));
+        code.push_back( "STORE " + std::to_string(addressCounter));
+    }
+}
+
+std::vector<std::string> MemoryManager::getCode() {
+    return code;
 }
 
 /*

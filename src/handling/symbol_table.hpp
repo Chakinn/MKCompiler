@@ -24,7 +24,7 @@ public:
     long long getAddress(std::string const& symbolIdentifier);
     bool isNumber(std::string value);
 
-    std::pair<long long,std::string> generateNumber(long long number);
+    long long generateNumber(long long number);
     
 
 };

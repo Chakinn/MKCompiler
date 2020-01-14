@@ -91,26 +91,26 @@
 %%
 
 program
-    : DECLARE declarations P_BEGIN commands P_END {return 0;}
-    | P_BEGIN commands P_END {return 0;}
+    : DECLARE declarations P_BEGIN commands P_END {handler.handleProgram();;return 0;}
+    | P_BEGIN commands P_END {handler.handleProgram();return 0;}
     ;
 
 declarations
     : declarations ',' PIDENTIFIER {handler.handleVarDeclaration($3);}
     | declarations ',' PIDENTIFIER'('NUM':'NUM')' {handler.handleArrayDeclaration($3,$5,$7);}
     | PIDENTIFIER {handler.handleVarDeclaration($1);}
-    | PIDENTIFIER'('NUM':'NUM')'
+    | PIDENTIFIER'('NUM':'NUM')' {handler.handleArrayDeclaration($1,$3,$5);}
     ;
 
 commands
-    : commands command
-    | command
+    : commands command {handler.handleCommand($2);}
+    | command {handler.handleFirstCommand($1);}
     ;
 
 command 
     : identifier ASSIGN expression';' {$$ = handler.handleAssign($1,$3);}
-    | IF condition THEN commands ELSE commands ENDIF 
-    | IF condition THEN commands ENDIF  
+    | IF condition THEN commands ELSE commands ENDIF {}
+    | IF condition THEN commands ENDIF  {$$ = handler.handleIf($2);}
     | WHILE condition DO commands ENDWHILE  
     | DO commands WHILE condition ENDDO 
     | FOR PIDENTIFIER FROM value TO value DO commands ENDFOR 
@@ -129,12 +129,12 @@ expression
     ;
 
 condition
-    : value EQ value {handler.handleCondition($1, "EQ", $3);}
-    | value NEQ value {handler.handleCondition($1, "NEQ", $3);}
-    | value LE value {handler.handleCondition($1, "LE", $3);}
-    | value GE value {handler.handleCondition($1, "GE", $3);}
-    | value LEQ value {handler.handleCondition($1, "LEQ", $3);}
-    | value GEQ value {handler.handleCondition($1, "GEQ", $3);}
+    : value EQ value {$$ = handler.handleCondition($1, "EQ", $3);}
+    | value NEQ value {$$ = handler.handleCondition($1, "NEQ", $3);}
+    | value LE value {$$ = handler.handleCondition($1, "LE", $3);}
+    | value GE value {$$ = handler.handleCondition($1, "GE", $3);}
+    | value LEQ value {$$ = handler.handleCondition($1, "LEQ", $3);}
+    | value GEQ value {$$ = handler.handleCondition($1, "GEQ", $3);}
     ;
 
 value

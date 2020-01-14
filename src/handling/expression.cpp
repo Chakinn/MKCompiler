@@ -1,4 +1,5 @@
 #include "expression.hpp"
+#include <iostream>
 
 Expression::Expression(SymbolTable* symbolTab, std::string leftValue, std::string operatorr, std::string rightValue) : Node(symbolTab) {
     lvalue = leftValue;
@@ -6,15 +7,16 @@ Expression::Expression(SymbolTable* symbolTab, std::string leftValue, std::strin
     rvalue = rightValue;
 };
 
-std::string Expression::getCode() {
-    std::stringstream code;
+std::vector<std::string> Expression::getCode() {
+    
+    std::vector<std::string> code;
 
     long long leftAddress;
     long long rightAddress;
     //if left is number generate number address
     try {
         long long n = std::stoll(lvalue);
-        leftAddress = symbolTable->generateNumber(n).first;
+        leftAddress = symbolTable->generateNumber(n);
     }
     // else get address fromm symbol table
     catch(const std::invalid_argument) {
@@ -23,23 +25,24 @@ std::string Expression::getCode() {
         //if right is number generate number address
     try {
         long long n = std::stoll(rvalue);
-        rightAddress = symbolTable->generateNumber(n).first;
+        rightAddress = symbolTable->generateNumber(n);
     }
     // else get address fromm symbol table
     catch(const std::invalid_argument) {
         rightAddress = symbolTable->getAddress(rvalue);
     }
 
-    code << "LOAD " << leftAddress; 
+    code.push_back("LOAD " + std::to_string(leftAddress)); 
 
     if (op == "PLUS") {
-        code << "ADD " << rightAddress << "\n";
+        code.push_back("ADD " + std::to_string(rightAddress));
     }
     else if (op == "MINUS") {
-        code << "SUB" << rightAddress << "\n";
+        code.push_back("SUB" + std::to_string(rightAddress));
     }
 
-    return code.str();
+    return code;
+
 }
 
 std::string Expression::getLvalue() {

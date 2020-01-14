@@ -1,7 +1,7 @@
 #include "symbol_table.hpp"
 
 SymbolTable::SymbolTable(MemoryManager* memManager){
-    memoryManager = memoryManager;
+    memoryManager = memManager;
 }
 
 bool SymbolTable::isDeclared(std::string const& symbolIdentifier) {
@@ -32,7 +32,7 @@ bool SymbolTable::isNumber(std::string value) {
     }
 }
 
-std::pair<long long,std::string> SymbolTable::generateNumber(long long number) {
+long long SymbolTable::generateNumber(long long number) {
     return memoryManager->generateNumber(number);
 }
 
