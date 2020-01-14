@@ -32,12 +32,12 @@ long long MemoryManager::generateNumber(long long number) {
         ONE = memoryMap.at(1);
     }
     catch(const std::out_of_range) {
-
+        std::cout<<"cannnot find ONE";
     }
     
-    //code.push_back( "SUB 0";
-    //code.push_back( "INC";
-    //code.push_back( "STORE 101";
+    code.push_back( "SUB 0");
+    code.push_back( "INC");
+    code.push_back( "STORE 101");
     while (currentNumber*2 < number) 
     {
         currentNumber = currentNumber + 1;

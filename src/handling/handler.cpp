@@ -80,9 +80,9 @@ std::string Handler::handleIf(std::string condtitionIdentifier, bool ifElse) {
 
 std::string Handler::handleWhile(std::string condtitionIdentifier, bool doFirst) {
     std::string nodeId = nodeIdentifier();
-    Node* condtition;
+    Node* conditition;
     try {
-        condtition = nodeTable.at(condtitionIdentifier);
+        conditition = nodeTable.at(condtitionIdentifier);
     }
     catch(std::out_of_range){
         std::cerr<<"condition not found " << condtitionIdentifier << "\n";
@@ -91,10 +91,10 @@ std::string Handler::handleWhile(std::string condtitionIdentifier, bool doFirst)
 
     Node* branch;
     if (doFirst) {
-        branch = new DoWhile(symbolTable,condtition,codeBlocks.top());
+        branch = new DoWhile(symbolTable,conditition,codeBlocks.top());
     }
     else {
-        branch = new WhileDo(symbolTable,condtition,codeBlocks.top());
+        branch = new WhileDo(symbolTable,conditition,codeBlocks.top());
     }
  
     codeBlocks.pop();
@@ -106,7 +106,18 @@ std::string Handler::handleWhile(std::string condtitionIdentifier, bool doFirst)
 
 std::string Handler::handleFor(std::string identifier, std::string start, std::string end, bool down) {
     std::string nodeId = nodeIdentifier();
+    long long address = memoryManager->allocateVar();
+    symbolTable->declare(identifier,new Symbol(address));
 
+    Node* forto;
+    if (down) {
+        forto = new ForDownTo(symbolTable,identifier,start,end,codeBlocks.top());
+    }
+    else {
+        forto = new ForTo(symbolTable,identifier,start,end,codeBlocks.top()); 
+    }
+    codeBlocks.pop();
+    nodeTable.insert(std::make_pair(nodeId, forto));
     return nodeId;
 }
 

@@ -19,7 +19,16 @@ void SymbolTable::declare(std::string identifier, Symbol* symbol) {
 }
 
 long long SymbolTable::getAddress(std::string const& symbolIdentifier) {
-    return table.at(symbolIdentifier)->getAddress();
+    long long address;
+    try {
+        long long n = std::stoll(symbolIdentifier);
+        address = generateNumber(n);
+    }
+    // else get address fromm symbol table
+    catch(const std::invalid_argument) {
+        address = table.at(symbolIdentifier)->getAddress();
+    }
+    return address;
 }
 
 bool SymbolTable::isNumber(std::string value) {

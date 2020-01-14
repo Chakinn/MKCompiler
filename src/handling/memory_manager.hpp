@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <iostream>
 
 class MemoryManager {
     std::unordered_map<long long, long long> memoryMap;

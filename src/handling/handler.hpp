@@ -21,6 +21,8 @@
 #include "branch_else.hpp"
 #include "while_do.hpp"
 #include "do_while.hpp"
+#include "for_to.hpp"
+#include "for_down_to.hpp"
 
 #include "write.hpp"
 #include "read.hpp"

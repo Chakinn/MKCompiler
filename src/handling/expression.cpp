@@ -10,39 +10,14 @@ Expression::Expression(SymbolTable* symbolTab, std::string leftValue, std::strin
 std::vector<std::string> Expression::getCode() {
     std::vector<std::string> code;
 
+    long long leftAddress = symbolTable->getAddress(lvalue);
     
-
-    long long leftAddress;
-    long long rightAddress;
-    //if left is number generate number address
-    try {
-        long long n = std::stoll(lvalue);
-        leftAddress = symbolTable->generateNumber(n);
-    }
-    // else get address fromm symbol table
-    catch(const std::invalid_argument) {
-        leftAddress = symbolTable->getAddress(lvalue);
-    }
-    
-
     if (op =="") {
         code.push_back("LOAD " + std::to_string(leftAddress));
         return code;
     }
+    long long rightAddress = symbolTable->getAddress(rvalue);
 
-        //if right is number generate number address
-    try {
-        long long n = std::stoll(rvalue);
-        rightAddress = symbolTable->generateNumber(n);
-    }
-    // else get address fromm symbol table
-    catch(const std::invalid_argument) {
-        rightAddress = symbolTable->getAddress(rvalue);
-    }
-
-    
-
-     
     code.push_back("LOAD " + std::to_string(leftAddress));
     if (op == "PLUS") {
         code.push_back("ADD " + std::to_string(rightAddress));
