@@ -109,14 +109,14 @@ commands
 
 command 
     : identifier ASSIGN expression';' {$$ = handler.handleAssign($1,$3);}
-    | IF condition THEN commands ELSE commands ENDIF {}
-    | IF condition THEN commands ENDIF  {$$ = handler.handleIf($2);}
-    | WHILE condition DO commands ENDWHILE  
-    | DO commands WHILE condition ENDDO 
-    | FOR PIDENTIFIER FROM value TO value DO commands ENDFOR 
-    | FOR PIDENTIFIER FROM value DOWNTO value DO commands ENDFOR 
-    | READ identifier';' 
-    | WRITE value';' 
+    | IF condition THEN commands ELSE commands ENDIF {$$ = handler.handleIf($2,true);}
+    | IF condition THEN commands ENDIF  {$$ = handler.handleIf($2,false);}
+    | WHILE condition DO commands ENDWHILE  {$$ = handler.handleWhile($2,false);}
+    | DO commands WHILE condition ENDDO {$$ = handler.handleWhile($4,true);}
+    | FOR PIDENTIFIER FROM value TO value DO commands ENDFOR {$$ = handler.handleFor($2,$4,$6,false);}
+    | FOR PIDENTIFIER FROM value DOWNTO value DO commands ENDFOR {$$ = handler.handleFor($2,$4,$6,true);}
+    | READ identifier';' {$$ = handler.handleRead($2);}
+    | WRITE value';' {$$ = handler.handleWrite($2);}
     ;
 
 expression

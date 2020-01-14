@@ -59,12 +59,12 @@ std::vector<std::string> Condition::getCode() {
             break;
         }
         case COP::LE:
-        case COP::GEQ: {
+        case COP::LEQ: {
             jump = "JNEG ";
             break;
         }
         case COP::GE:
-        case COP::LEQ: {
+        case COP::GEQ: {
             jump = "JPOS ";
             break;
         }

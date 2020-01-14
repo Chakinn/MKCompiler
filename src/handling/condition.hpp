@@ -21,6 +21,6 @@ public:
     COP getOp();
 
     static std::string lastLabel();
-private:
     static std::string newLabel();
+    
 };

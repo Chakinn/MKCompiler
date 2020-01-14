@@ -51,7 +51,7 @@ std::string Handler::handleAssign(std::string identifier, std::string expression
 }
 
 
-std::string Handler::handleIf(std::string condtitionIdentifier) {
+std::string Handler::handleIf(std::string condtitionIdentifier, bool ifElse) {
     std::string nodeId = nodeIdentifier();
     Node* condtition;
     try {
@@ -61,27 +61,65 @@ std::string Handler::handleIf(std::string condtitionIdentifier) {
         std::cerr<<"condition not found " << condtitionIdentifier << "\n";
     }
     nodeTable.erase(condtitionIdentifier);
-    Node* branch = new Branch(symbolTable,condtition,codeBlocks.top());
+    Node* branch;
+    if(ifElse) {
+        CodeBlock* elseBlock = codeBlocks.top();
+        codeBlocks.pop();
+        branch = new BranchElse(symbolTable,condtition,codeBlocks.top(),elseBlock);
+        codeBlocks.pop();
+    } 
+    else {
+        branch = new Branch(symbolTable,condtition,codeBlocks.top());
+        codeBlocks.pop();
+    } 
+    
+    nodeTable.insert(std::make_pair(nodeId, branch));
+
+    return nodeId;
+}
+
+std::string Handler::handleWhile(std::string condtitionIdentifier, bool doFirst) {
+    std::string nodeId = nodeIdentifier();
+    Node* condtition;
+    try {
+        condtition = nodeTable.at(condtitionIdentifier);
+    }
+    catch(std::out_of_range){
+        std::cerr<<"condition not found " << condtitionIdentifier << "\n";
+    }
+    nodeTable.erase(condtitionIdentifier);
+
+    Node* branch;
+    if (doFirst) {
+        branch = new DoWhile(symbolTable,condtition,codeBlocks.top());
+    }
+    else {
+        branch = new WhileDo(symbolTable,condtition,codeBlocks.top());
+    }
+ 
     codeBlocks.pop();
     nodeTable.insert(std::make_pair(nodeId, branch));
 
     return nodeId;
 }
 
-std::string Handler::handleWhile() {
-    return "while";
-}
 
-std::string Handler::handleFor(std::string identifier) {
-    return "for";
+std::string Handler::handleFor(std::string identifier, std::string start, std::string end, bool down) {
+    std::string nodeId = nodeIdentifier();
+
+    return nodeId;
 }
 
 std::string Handler::handleRead(std::string identifier) {
-    return "read";
+    std::string nodeId = nodeIdentifier();
+    nodeTable.insert(std::make_pair(nodeId, new Read(symbolTable, identifier)));
+    return nodeId;
 }
 
 std::string Handler::handleWrite(std::string value) {
-    return "write";
+    std::string nodeId = nodeIdentifier();
+    nodeTable.insert(std::make_pair(nodeId, new Write(symbolTable, value)));
+    return nodeId;
 }
 
 std::string Handler::handleExpression(std::string value1, std::string op, std::string value2) {
@@ -120,21 +158,15 @@ void Handler::handleProgram() {
         code.insert(code.end(),blockCode.begin(),blockCode.end());
     }
     code.push_back("HALT");
+    optimizer.manageLabels(&code);
+
     std::ofstream out1;
-    out1.open("out1.txt");
-    std::ofstream out2;
-    out2.open("out2.txt");
+    out1.open("out.mr");
 
     for(std::string line : code) {
         out1 << line << "\n";
     }
 
-    optimizer.manageLabels(&code);
-
-    for(std::string line : code) {
-        out2 << line << "\n";
-    }
-    
 }
 
 void Handler::logError(std::string const& errorMessage, int lineNumber) {

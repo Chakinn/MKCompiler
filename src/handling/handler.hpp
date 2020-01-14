@@ -18,6 +18,12 @@
 #include "code_block.hpp"
 #include "condition.hpp"
 #include "branch.hpp"
+#include "branch_else.hpp"
+#include "while_do.hpp"
+#include "do_while.hpp"
+
+#include "write.hpp"
+#include "read.hpp"
 #include "../back/optimizer.hpp"
 
 class Handler {
@@ -34,9 +40,11 @@ public:
     std::string handleVarDeclaration(std::string identifier);
     std::string handleArrayDeclaration(std::string identifier, std::string startIndex, std::string endIndex);
     std::string handleAssign(std::string identifier, std::string expressonIdentifier);
-    std::string handleIf(std::string conditionIdentifier);
-    std::string handleWhile();
-    std::string handleFor(std::string identifier);
+    std::string handleIf(std::string conditionIdentifier, bool ifElse);
+    std::string handleWhileDo(std::string condtitionIdentifier);
+    std::string handleWhile(std::string condtitionIdentifier, bool doFirs);
+    std::string handleFor(std::string identifier, std::string start, std::string end, bool down);
+
     std::string handleRead(std::string identifier);
     std::string handleWrite(std::string value);
     std::string handleExpression(std::string value1, std::string op, std::string value2);
