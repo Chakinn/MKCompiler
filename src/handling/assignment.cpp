@@ -11,10 +11,22 @@ Assignment::~Assignment() {
 std::vector<std::string> Assignment::getCode() {
     std::vector<std::string> code;
 
-    std::vector<std::string> expressionCode = exp->getCode();
-    code.insert(code.begin(),expressionCode.begin(),expressionCode.end());
     long long address = symbolTable->getAddress(id);
-    code.push_back("STORE " + std::to_string(address));
+    if (address == -1) {
+        std::vector<std::string> calculateAddressCode = symbolTable->calculateAddress(id);
+        code.insert(code.end(),calculateAddressCode.begin(),calculateAddressCode.end());
+        long long pointerAddress = symbolTable->getFreeAddress();
+        code.push_back("STORE "+std::to_string(pointerAddress));
+        std::vector<std::string> expressionCode = exp->getCode();
+        code.insert(code.end(),expressionCode.begin(),expressionCode.end());
+        code.push_back("STOREI " + std::to_string(pointerAddress));
+    }
+    else {
+        std::vector<std::string> expressionCode = exp->getCode();
+        code.insert(code.end(),expressionCode.begin(),expressionCode.end());
+        code.push_back("STORE " + std::to_string(address));
+    }
+    
 
     return code;
 }

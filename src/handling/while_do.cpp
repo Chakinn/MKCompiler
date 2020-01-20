@@ -11,7 +11,7 @@ std::vector<std::string> WhileDo::getCode() {
     std::vector<std::string> conditionCode = condition->getCode();
     std::string endLabel = conditionCode[0];
 
-    std::string startLabel = Condition::newLabel();
+    std::string startLabel = Label::newLabel();
     code.push_back(startLabel);
     code.insert(code.end(), conditionCode.begin()+1, conditionCode.end());
 

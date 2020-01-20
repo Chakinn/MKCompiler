@@ -32,6 +32,7 @@
     #include <string>
    
     #include "driver.hpp"
+    #include <typeinfo>
     #include "../handling/handler.hpp"
 
     Handler handler;
@@ -91,7 +92,7 @@
 %%
 
 program
-    : DECLARE declarations P_BEGIN commands P_END {handler.handleProgram();;return 0;}
+    : DECLARE declarations P_BEGIN commands P_END {handler.handleProgram();return 0;}
     | P_BEGIN commands P_END {handler.handleProgram();return 0;}
     ;
 
@@ -144,8 +145,8 @@ value
 
 identifier
     : PIDENTIFIER
-    | PIDENTIFIER'('PIDENTIFIER')'
-    | PIDENTIFIER'('NUM')'
+    | PIDENTIFIER'('PIDENTIFIER')'  {$$ = $1+"("+$3+")";}
+    | PIDENTIFIER'('NUM')' {$$ = $1+"("+$3+")";}
     ;
 %%
 

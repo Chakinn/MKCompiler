@@ -18,7 +18,7 @@ std::vector<std::string> BranchElse::getCode() {
     std::vector<std::string> ifBlockCode = ifCodeBlock->getCode();
     code.insert(code.end(),ifBlockCode.begin(),ifBlockCode.end());
 
-    std::string endLabel = Condition::newLabel();
+    std::string endLabel = Label::newLabel();
     code.push_back("JUMP " + endLabel);
     //label
     code.push_back(label);

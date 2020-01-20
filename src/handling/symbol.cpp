@@ -3,6 +3,8 @@
 Symbol::Symbol(long long memoryAddress) {
     address = memoryAddress;
     type = SymbolType::NUMBER;
+    low = 0;
+    high = 0;
 }
 
 Symbol::Symbol(long long memoryAddress, long long lowerIndex, long long upperIndex) {

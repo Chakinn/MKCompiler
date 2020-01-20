@@ -1,10 +1,13 @@
 #pragma once
 
 #include "node.hpp"
+#include "label.hpp"
+
+enum class EOP {NONE, PLUS, MINUS, TIMES, DIV, MOD};
 
 class Expression : public Node {
     std::string lvalue;
-    std::string op;
+    EOP op;
     std::string rvalue;
 
 public:
@@ -15,5 +18,12 @@ public:
 
     std::string getLvalue();
     std::string getRvalue();
-    std::string getOp();
+    EOP getOp();
+private:
+    int powerOfTwo(long long number);
+    std::vector<int> binaryRepresentation(long long number);
+    void multiplyNumberCode(std::vector<std::string>& code, long long varAddress, long long number);
+    void multiplyVarCode(std::vector<std::string>& code, long long leftAddress, long long rightAddress);
+    void divNumberCode(std::vector<std::string>& code, long long varAddress, long long number);
+    void divVarCode(std::vector<std::string>& code, long long leftAddress, long long rightAddress);
 };

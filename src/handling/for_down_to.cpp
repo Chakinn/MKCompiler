@@ -17,7 +17,7 @@ std::vector<std::string> ForDownTo::getCode() {
     long long endAddress = symbolTable->getAddress(end);
     long long itAddress = symbolTable->getAddress(identifier);
 
-    std::string startLabel = Condition::newLabel();
+    std::string startLabel = Label::newLabel();
 
     code.push_back("LOAD " + std::to_string(startAddress));
     code.push_back("STORE " + std::to_string(itAddress));
@@ -30,7 +30,7 @@ std::vector<std::string> ForDownTo::getCode() {
     code.push_back("DEC");
     code.push_back("STORE " + std::to_string(itAddress));
     code.push_back("SUB " + std::to_string(endAddress));
-    std::string endLabel = Condition::newLabel();
+    std::string endLabel = Label::newLabel();
     code.push_back("JNEG "+ endLabel);
     code.push_back("JUMP " + startLabel);
     code.push_back(endLabel);

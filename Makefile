@@ -9,8 +9,8 @@ CXXDEBUG = -g -Wall
 CSTD = -std=c99
 CXXSTD = -std=c++14
 
-CFLAGS = -Wno-deprecated-register -O0  $(CDEBUG) $(CSTD) 
-CXXFLAGS = -Wno-deprecated-register -O0  $(CXXDEBUG) $(CXXSTD)
+CFLAGS = -O0  $(CDEBUG) $(CSTD) 
+CXXFLAGS = -O0  $(CXXDEBUG) $(CXXSTD)
 
 DIRS = obj bin
 
@@ -23,7 +23,7 @@ FBELEMENTS =  parser lexer
 FRONTELEMENTS = driver main
 FRONTFILES = $(addsuffix .cpp, $(addprefix src/front/, $(FRONTELEMENTS)))
 
-HANDLINGELEMENTS = symbol memory_manager symbol_table node expression assignment condition branch branch_else while_do do_while for_to for_down_to write read code_block handler 
+HANDLINGELEMENTS = symbol memory_manager symbol_table node expression assignment label condition branch branch_else while_do do_while for_to for_down_to write read code_block handler 
 HANDLINGFILES = $(addsuffix .cpp, $(addprefix src/handling/, $(HANDLINGELEMETS)))
 
 BACKELEMENTS = optimizer

@@ -22,19 +22,20 @@ std::string Handler::handleArrayDeclaration(std::string identifier, std::string 
         logError("Variable "+identifier+" was already declared",1);
     }
     long long low = std::stoll(startIndex);
-    long long high = std::stoll(startIndex);
+    long long high = std::stoll(endIndex);
 
     if(high < low) {
         logError("Wrong array bounds",1);
     }
 
-    long long address = memoryManager->allocateArray(high-low+1);
+    long long address = memoryManager->allocateArray(low,high);
     symbolTable->declare(identifier, new Symbol(address,low,high));
     
     return "arrdecl";
 }
 
 std::string Handler::handleAssign(std::string identifier, std::string expressionIdentifier) {
+    symbolTable->getAddress(identifier);
     std::string nodeId = nodeIdentifier();
     Node* expression;
     try {
@@ -159,8 +160,6 @@ std::string Handler::handleFirstCommand(std::string nodeId) {
 void Handler::handleProgram() {
     std::vector<std::string> code;
     code.reserve(1000);
-    std::vector<std::string> numberCode = memoryManager->getCode();
-    code.insert(code.begin(),numberCode.begin(),numberCode.end());
     
     while(!codeBlocks.empty()) {
         CodeBlock* codeBlock = codeBlocks.top();
@@ -168,6 +167,8 @@ void Handler::handleProgram() {
         std::vector<std::string> blockCode = codeBlock->getCode();
         code.insert(code.end(),blockCode.begin(),blockCode.end());
     }
+    std::vector<std::string> numberCode = memoryManager->getCode();
+    code.insert(code.begin(),numberCode.begin(),numberCode.end());
     code.push_back("HALT");
     optimizer.manageLabels(&code);
 

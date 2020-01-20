@@ -25,6 +25,7 @@ using token = FB::Parser::token;
 %}
 
 [ \t\n] //skip whitespaces and newlines
+[\[].*[\]]
 
 -?[0-9]+ {*yylval = yytext;return token::NUM;}
 [_a-z]+ {*yylval = yytext;return token::PIDENTIFIER;}

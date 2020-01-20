@@ -9,3 +9,10 @@ parser.tab.cc
 parser.tab.hh
 kompilator
 input.txt
+programs
+bin
+maszyna_wirtualna
+*.json
+example
+mat.sh
+out.mr

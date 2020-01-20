@@ -1,7 +1,7 @@
 #pragma once
 
 #include "node.hpp"
-#include "condition.hpp"
+#include "label.hpp"
 #include "code_block.hpp"
 
 class ForTo : public Node {

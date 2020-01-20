@@ -8,6 +8,7 @@
 
 #include "symbol.hpp"
 #include "memory_manager.hpp"
+//#include "handler.hpp"
 
 class SymbolTable {
     std::unordered_map<std::string, std::unique_ptr<Symbol>> table;
@@ -20,9 +21,12 @@ public:
 
     bool isDeclared(std::string const& symbolIdentifier);
     void declare(std::string identifier, Symbol* symbol);
+    bool isNumber(std::string value);
 
     long long getAddress(std::string const& symbolIdentifier);
-    bool isNumber(std::string value);
+    long long getFreeAddress();
+    std::vector<std::string> calculateAddress(std::string identifier);
+
 
     long long generateNumber(long long number);
     

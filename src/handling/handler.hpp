@@ -55,8 +55,10 @@ public:
     std::string handleFirstCommand(std::string nodeId);
     void handleProgram();
 
+    static void logError(std::string const& errorMessage, int lineNumber);
+
 private:
-    void logError(std::string const& errorMessage, int lineNumber);
+    
     long long nextAddress();
     std::string nodeIdentifier();
 };

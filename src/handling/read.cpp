@@ -7,17 +7,20 @@ Read::Read(SymbolTable* symbolTable, std::string varIdentifier) : Node(symbolTab
 std::vector<std::string> Read::getCode() {
     std::vector<std::string> code;
 
-    int bracketIndex = variableIdentifier.find_first_of('(');
-    long long address;
-    if (bracketIndex < 0) {
-        //var
-        address = symbolTable->getAddress(variableIdentifier);
+    long long address = symbolTable->getAddress(variableIdentifier);
+    if (address == -1) {
+        std::vector<std::string> calculateAddressCode = symbolTable->calculateAddress(variableIdentifier);
+        code.insert(code.end(),calculateAddressCode.begin(),calculateAddressCode.end());
+        long long arrayPointerAddress = symbolTable->getFreeAddress();
+        code.push_back("STORE " + std::to_string(arrayPointerAddress));
+        code.push_back("GET");
+        code.push_back("STOREI " + std::to_string(arrayPointerAddress));
     }
     else {
-        //array
+        code.push_back("GET");
+        code.push_back("STORE "+std::to_string(address));
     }
 
-    code.push_back("GET");
-    code.push_back("STORE "+std::to_string(address));
+    
     return code;
 }

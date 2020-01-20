@@ -15,7 +15,7 @@ void Optimizer::arrangeLabels(std::vector<std::string>* code) {
     std::vector<unsigned int> linesToDelete;
     for(unsigned int i = 0; i < n; i++) {
         std::string line = code->at(i);
-        if(line[0]=='L' && line[1]!='O') {
+        if(Label::isLabel(line)) {
             currentLabels.push_back(line);
             linesToDelete.push_back(i);
         }
@@ -33,82 +33,45 @@ void Optimizer::arrangeLabels(std::vector<std::string>* code) {
 
 void Optimizer::subsituteLabelsWithAddresses(std::vector<std::string>* code) {
     std::unordered_map<std::string, unsigned int> targetMap;
-    std::unordered_multimap<std::string, unsigned int> jumpMap;
 
+    //find all jump targets
     unsigned int n = code->size();
     for(unsigned int i = 0; i < n; i++) {
         std::string line = code->at(i);
         char firstLetter = line[0];
-        // first letter J - jump command
-        /*if(firstLetter == 'J') {
-            unsigned int labelIndex = line.find_first_of('L');
-            std::string label = line.substr(labelIndex);
-            //if jump target was already found
-            try {
-                unsigned int jumpTarget = targetMap.at(label);
-                code->at(i).replace(labelIndex,labelIndex,std::to_string(jumpTarget));
-
-                unsigned int replaceIndex = code->at(jumpTarget).find(label);
-                code->at(jumpTarget).erase(replaceIndex,label.size()+1);
-            }
-            // else save label in jump map
-            catch(std::out_of_range) {
-                jumpMap.insert(std::make_pair(label,i));
-            }
-        }*/
         // list of labels
-        /*else*/ if(firstLetter == 'L' && line[1]!='O') {
+        if(firstLetter == 'L' && line[1]!='O') {
             //get all labels
             std::stringstream sstream;
             sstream << line;
             std::string label;
             std::vector<std::string> labels;
             while(std::getline(sstream, label, ' ')) {
-                labels.push_back(label);
-            }
-
-            for(auto label = labels.begin(); label!=labels.end(); label++) {
-                if(label->at(0) != 'L' || label->at(1) == 'O') {
-                    labels.erase(label--);
-                }
-            }
-
-            for(std::string label : labels) {
-                //if jump source already found
-                /*auto range = jumpMap.equal_range(label);
-
-                for(auto it = range.first; it != range.second; ++it) {
-                    unsigned jumpSource = it->second;
-                    unsigned int labelIndex = code->at(jumpSource).find_first_of('L');
-                    code->at(jumpSource).replace(labelIndex,labelIndex,std::to_string(i)); 
-                }
-
-                if(range.first!=range.second) {
-                    unsigned int replaceIndex = code->at(i).find(label);
-                    code->at(i).erase(replaceIndex,label.size()+1);
+                if(Label::isLabel(label)) {
+                    labels.push_back(label);
                 }
                 else {
-                    targetMap.insert(std::make_pair(label,i));
-                }*/
+                    break;
+                }
+            }
+            for(std::string label : labels) {
                 targetMap.insert(std::make_pair(label,i));
+                unsigned int replaceIndex = code->at(i).find(label);
+                code->at(i).erase(replaceIndex,label.size()+1);
             }  
         }
     }
+    //substitute labels in jump commands with target addresses 
     for(unsigned int i = 0; i < n; i++) {
         std::string line = code->at(i);
         char firstLetter = line[0];
         if(firstLetter == 'J') {
             unsigned int labelIndex = line.find_first_of('L');
             std::string label = line.substr(labelIndex);
-            //if jump target was already found
             try {
                 unsigned int jumpTarget = targetMap.at(label);
                 code->at(i).replace(labelIndex,labelIndex,std::to_string(jumpTarget));
-
-                unsigned int replaceIndex = code->at(jumpTarget).find(label);
-                code->at(jumpTarget).erase(replaceIndex,label.size()+1);
             }
-            // else save label in jump map
             catch(std::out_of_range) {
                 std::cout<<"jump target out of range";
             }
