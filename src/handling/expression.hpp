@@ -24,6 +24,7 @@ private:
     std::vector<int> binaryRepresentation(long long number);
     void multiplyNumberCode(std::vector<std::string>& code, long long varAddress, long long number);
     void multiplyVarCode(std::vector<std::string>& code, long long leftAddress, long long rightAddress);
-    void divNumberCode(std::vector<std::string>& code, long long varAddress, long long number);
-    void divVarCode(std::vector<std::string>& code, long long leftAddress, long long rightAddress);
+    void divisionNumberCode(std::vector<std::string>& code, long long varAddress, long long number);
+    void divisionCode(std::vector<std::string>& code, long long leftAddress, long long rightAddress, std::string mode);
+    void modNumberCode(std::vector<std::string>& code, long long varAddress, long long number);
 };

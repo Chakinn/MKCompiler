@@ -119,15 +119,11 @@ std::vector<std::string> Expression::getCode() {
             bool rightIsNumber = symbolTable->isNumber(rvalue);
             //both factors are numbers - precompile
             if(leftIsNumber && rightIsNumber) {
-                code.push_back("LOAD " + std::to_string(symbolTable->generateNumber(std::stoll(lvalue) * std::stoll(rvalue))));
-            }
-            //left is number
-            else if(leftIsNumber) {
-                divNumberCode(code, rightAddress, std::stoll(lvalue));
+                code.push_back("LOAD " + std::to_string(symbolTable->generateNumber(std::stoll(lvalue) / std::stoll(rvalue))));
             }
             //right is number
-            else if(rightIsNumber) {
-                divNumberCode(code, leftAddress, std::stoll(rvalue));
+            else if(rightIsNumber && powerOfTwo(std::stoll(rvalue))) {
+                divisionNumberCode(code, leftAddress, std::stoll(rvalue));
             }
             //both are identifiers - generate mul algorithm
             else {
@@ -144,11 +140,38 @@ std::vector<std::string> Expression::getCode() {
                     code.push_back("STORE " + std::to_string(helpAddress));
                     rightAddress = helpAddress;
                 }
-                divVarCode(code,leftAddress,rightAddress);
+                divisionCode(code,leftAddress,rightAddress, "DIV");
             }            
             break;
         }
         case EOP::MOD: {
+            bool leftIsNumber = symbolTable->isNumber(lvalue);
+            bool rightIsNumber = symbolTable->isNumber(rvalue);
+            //both factors are numbers - precompile
+            if(leftIsNumber && rightIsNumber) {
+                code.push_back("LOAD " + std::to_string(symbolTable->generateNumber(std::stoll(lvalue) / std::stoll(rvalue))));
+            }
+            //right is number
+            else if(rightIsNumber && powerOfTwo(std::stoll(rvalue))) {
+                modNumberCode(code, leftAddress, std::stoll(rvalue));
+            }
+            //both are identifiers - generate mul algorithm
+            else {
+                //create temp variables that can be modified
+                if(!leftIsTemp) {
+                    long long helpAddress = symbolTable->getFreeAddress();
+                    code.push_back("LOAD " + std::to_string(leftAddress));
+                    code.push_back("STORE " + std::to_string(helpAddress));
+                    leftAddress = helpAddress;
+                }
+                if(!rightIsTemp) {
+                    long long helpAddress = symbolTable->getFreeAddress();
+                    code.push_back("LOAD " + std::to_string(rightAddress));
+                    code.push_back("STORE " + std::to_string(helpAddress));
+                    rightAddress = helpAddress;
+                }
+                divisionCode(code,leftAddress,rightAddress, "MOD");
+            }      
             break;
         }
     }
@@ -254,36 +277,37 @@ void Expression::multiplyVarCode(std::vector<std::string>& code, long long leftA
     code.push_back("LOAD " + std::to_string(tempAddress));
 }
 
-void Expression::divNumberCode(std::vector<std::string>& code, long long varAddress, long long number) {
+void Expression::divisionNumberCode(std::vector<std::string>& code, long long varAddress, long long number) {
     int power = powerOfTwo(number);
-    //number is a power of two - shifts only
-    if(power != -1) {
-        long long powerAddress = symbolTable->generateNumber(-power);
-        code.push_back("LOAD " + std::to_string(varAddress));
-        code.push_back("SHIFT " + std::to_string(powerAddress));
-        return;
-    }
-    //else split into 2^i factors
-    else {
-        ;
-    }
+    long long powerAddress = symbolTable->generateNumber(-power);
+    code.push_back("LOAD " + std::to_string(varAddress));
+    code.push_back("SHIFT " + std::to_string(powerAddress));
+    return;
 }
 
-void Expression::divVarCode(std::vector<std::string>& code, long long leftAddress, long long rightAddress) {
+void Expression::divisionCode(std::vector<std::string>& code, long long leftAddress, long long rightAddress, std::string mode) {
     long long quotientAddress = symbolTable->getFreeAddress();
     long long remainderAddress = symbolTable->getFreeAddress();
     long long iteratorAddress = symbolTable->getFreeAddress();
     long long negativeIteratorAddress = symbolTable->getFreeAddress();
 
+    long long dividendSignAddress = symbolTable->getFreeAddress();
+    long long divisorSignAddress = symbolTable->getFreeAddress();
+
     long long tempAddress = symbolTable->getFreeAddress();
 
     std::string iteratorLabel = Label::newLabel();
     std::string preparationLabel = Label::newLabel();
+    std::string divisorSignLabel = Label::newLabel();
+    std::string dividendLabel = Label::newLabel();
+    std::string dividendSignLabel = Label::newLabel();
     std::string forLabel = Label::newLabel();
     std::string bitLabel = Label::newLabel();
     std::string remainderLabel = Label::newLabel();
     std::string ifLabel = Label::newLabel();
     std::string quotientLabel = Label::newLabel();
+    std::string endForLabel = Label::newLabel();
+    std::string positiveSignLabel = Label::newLabel();
     std::string endLabel = Label::newLabel();
 
 
@@ -295,10 +319,44 @@ void Expression::divVarCode(std::vector<std::string>& code, long long leftAddres
     code.push_back("STORE " + std::to_string(quotientAddress));
     code.push_back("STORE " + std::to_string(remainderAddress));
     code.push_back("STORE " + std::to_string(iteratorAddress));
+    //division by 0 gives 0
+    code.push_back("LOAD " + std::to_string(rightAddress));
+    code.push_back("JZERO " + endLabel);
+    //check signs
+    code.push_back("JNEG " + divisorSignLabel);
+    //set divisiorSign = 0 (positive)
+    code.push_back("SUB 0");
+    code.push_back("STORE " + std::to_string(divisorSignAddress));
+    code.push_back("JUMP " + dividendLabel);
+
+    //set divisor = abs(divisor) and divisorSign = 1 (negative)
+    code.push_back(divisorSignLabel);
+    code.push_back("SUB " + std::to_string(rightAddress));
+    code.push_back("SUB " + std::to_string(rightAddress));
+    code.push_back("STORE " + std::to_string(rightAddress));
+    code.push_back("LOAD " + std::to_string(ONE));
+    code.push_back("STORE " + std::to_string(divisorSignAddress));
+
+    code.push_back(dividendLabel);
+    code.push_back("LOAD " + std::to_string(leftAddress));
+    code.push_back("STORE " + std::to_string(tempAddress)); //save left to temp for optimisation purpose
+    code.push_back("JNEG " + dividendSignLabel);
+
+    //set dividendSign = 0 (positive)
+    code.push_back("SUB 0");
+    code.push_back("STORE " + std::to_string(dividendSignAddress));
+    code.push_back("JUMP " + iteratorLabel);
+
+    //set dividend = abs(dividend) and dividendSign = 1 (negative)
+    code.push_back(dividendSignLabel);
+    code.push_back("SUB " + std::to_string(leftAddress));
+    code.push_back("SUB " + std::to_string(leftAddress));
+    code.push_back("STORE " + std::to_string(leftAddress));
+    code.push_back("STORE " + std::to_string(tempAddress));
+    code.push_back("LOAD " + std::to_string(ONE));
+    code.push_back("STORE " + std::to_string(dividendSignAddress));
 
     //calculate number of operations
-    code.push_back("LOAD " + std::to_string(leftAddress));
-    code.push_back("STORE " + std::to_string(tempAddress));
     code.push_back(iteratorLabel);
     code.push_back("LOAD " + std::to_string(iteratorAddress));
     code.push_back("INC");
@@ -320,7 +378,7 @@ void Expression::divVarCode(std::vector<std::string>& code, long long leftAddres
     code.push_back(forLabel);
     code.push_back("LOAD " + std::to_string(iteratorAddress));
     code.push_back("DEC");
-    code.push_back("JNEG " + endLabel);
+    code.push_back("JNEG " + endForLabel);
     code.push_back("STORE " + std::to_string(iteratorAddress));
     code.push_back("LOAD " + std::to_string(negativeIteratorAddress));
     code.push_back("INC");
@@ -408,9 +466,70 @@ void Expression::divVarCode(std::vector<std::string>& code, long long leftAddres
 
     code.push_back("JUMP " + forLabel);
     
+    code.push_back(endForLabel);
+    //check if signs are equal
+    code.push_back("LOAD " + std::to_string(divisorSignAddress));
+    code.push_back("SUB " + std::to_string(dividendSignAddress));
+    code.push_back("JZERO " + positiveSignLabel);   //if equal - positive result
+
+    if(mode == "DIV") {
+        std::string remainderZeroLabel = Label::newLabel();
+        
+        //if not - negative result
+        //check remainder
+        code.push_back("LOAD " + std::to_string(remainderAddress));
+        code.push_back("JZERO " + remainderZeroLabel);
+
+        //if remainder != 0 flip quotient and sub 1
+        code.push_back("LOAD " + std::to_string(quotientAddress));
+        code.push_back("SUB " + std::to_string(quotientAddress));
+        code.push_back("SUB " + std::to_string(quotientAddress));
+        code.push_back("DEC");
+        code.push_back("JUMP " + endLabel);
+
+        //if remainder was 0 flip quotient
+        code.push_back(remainderZeroLabel);
+        code.push_back("LOAD " + std::to_string(quotientAddress));
+        code.push_back("SUB " + std::to_string(quotientAddress));
+        code.push_back("SUB " + std::to_string(quotientAddress));
+        code.push_back("JUMP " + endLabel);
+
+        //positive result
+        code.push_back(positiveSignLabel);
+        code.push_back("LOAD " + std::to_string(quotientAddress));
+    }
+    else if(mode == "MOD") {
+        std::string positiveDivisorLabel = Label::newLabel();
+
+        //if negative quotient - flip remainder and add divisor
+        code.push_back("LOAD " + std::to_string(remainderAddress));
+        code.push_back("SUB " + std::to_string(remainderAddress));
+        code.push_back("SUB " + std::to_string(remainderAddress));
+        code.push_back("ADD " + std::to_string(rightAddress));
+        code.push_back("STORE " + std::to_string(remainderAddress));
+
+        
+        //if positive quotient
+        code.push_back(positiveSignLabel);
+        code.push_back("LOAD " + std::to_string(divisorSignAddress));
+        code.push_back("JZERO " + positiveDivisorLabel);
+
+        //if negative - negative result
+        code.push_back("LOAD " + std::to_string(remainderAddress));
+        code.push_back("SUB " + std::to_string(remainderAddress));
+        code.push_back("SUB " + std::to_string(remainderAddress));
+        code.push_back("JUMP " + endLabel);
+
+        code.push_back(positiveDivisorLabel);
+        code.push_back("LOAD " + std::to_string(remainderAddress));
+    }
     code.push_back(endLabel);
-    code.push_back("LOAD " + std::to_string(quotientAddress));
 }
+
+void Expression::modNumberCode(std::vector<std::string>& code, long long varAddress, long long number) {
+    
+}
+
 
 int Expression::powerOfTwo(long long number) {
         int counter =0;
