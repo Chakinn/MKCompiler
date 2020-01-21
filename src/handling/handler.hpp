@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 #include <iostream>
-#include <fstream>
 
 
 #include "symbol.hpp"
@@ -27,6 +26,7 @@
 #include "write.hpp"
 #include "read.hpp"
 #include "../back/optimizer.hpp"
+#include "../front/writer.hpp"
 
 class Handler {
     std::unordered_map<std::string, Node*> nodeTable;

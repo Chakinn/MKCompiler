@@ -23,9 +23,8 @@ using token = FB::Parser::token;
 %{          
     yylval = lval;
 %}
-
+\[ {skipComment();}
 [ \t\n] //skip whitespaces and newlines
-[\[].*[\]]
 
 -?[0-9]+ {*yylval = yytext;return token::NUM;}
 [_a-z]+ {*yylval = yytext;return token::PIDENTIFIER;}
@@ -71,5 +70,7 @@ GEQ {return token::GEQ;}
 <<EOF>> {return token::END_FILE;}
 
 %%
+
+
 
 

@@ -62,12 +62,12 @@ void MemoryManager::generateNumbers() {
     for(int i = 0; i < n; i++) {
         Number number = numbers[i]; 
         long long value = number.getValue();
-        long long absValue = abs(value);
+        long long absValue = llabs(value);
         if(absValue == 1 || absValue == 0) {
             continue;
         }
         
-        long currentValue =  abs(numbers[i-1].getValue());
+        long long currentValue =  llabs(numbers[i-1].getValue());
 
         int shift = 0;
         
@@ -89,6 +89,7 @@ void MemoryManager::generateNumbers() {
             }
         }
         //else try shifts
+        
         else {
             shift = 1;
             while(absValue - currentValue > 10) {

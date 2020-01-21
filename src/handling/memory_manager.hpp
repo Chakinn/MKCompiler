@@ -28,7 +28,7 @@ private:
         public:
         Number(long long val){value=val;}
         long long getValue(){return value;}
-        bool operator< (const Number &num) const {return abs(value) < abs(num.value);}
+        bool operator< (const Number &num) const {return llabs(value) < llabs(num.value);}
     };
     void generateShiftNumbers(std::vector<Number>& numbers);
 

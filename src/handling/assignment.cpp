@@ -26,7 +26,5 @@ std::vector<std::string> Assignment::getCode() {
         code.insert(code.end(),expressionCode.begin(),expressionCode.end());
         code.push_back("STORE " + std::to_string(address));
     }
-    
-
     return code;
 }

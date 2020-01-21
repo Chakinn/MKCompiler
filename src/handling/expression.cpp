@@ -227,6 +227,9 @@ void Expression::multiplyVarCode(std::vector<std::string>& code, long long leftA
     std::string evenLabel = Label::newLabel();
     std::string negLabel = Label::newLabel();
 
+    code.push_back("SUB 0");
+    code.push_back("STORE " + std::to_string(tempAddress));
+
     //load multiplier
     code.push_back("LOAD " + std::to_string(leftAddress));
 

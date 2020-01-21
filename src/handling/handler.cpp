@@ -172,12 +172,7 @@ void Handler::handleProgram() {
     code.push_back("HALT");
     optimizer.manageLabels(&code);
 
-    std::ofstream out1;
-    out1.open("out.mr");
-
-    for(std::string line : code) {
-        out1 << line << "\n";
-    }
+    Writer::writeToFile(&code);
 
 }
 

@@ -15,4 +15,5 @@ maszyna_wirtualna
 *.json
 example
 mat.sh
-out.mr
+out
+test.sh

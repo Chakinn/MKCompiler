@@ -26,6 +26,11 @@ public:
    // YY_DECL defined in lexer.l
    // Method body created by flex in lexer.yy.cc
 
+   void skipComment() {
+      char c;
+      while(c = yyinput() != ']');
+   }
+
 
 private:
    /* yyval ptr */
