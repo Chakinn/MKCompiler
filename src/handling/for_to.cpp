@@ -18,20 +18,21 @@ std::vector<std::string> ForTo::getCode() {
     long long itAddress = symbolTable->getAddress(identifier);
 
     std::string startLabel = Label::newLabel();
+    std::string endLabel = Label::newLabel();
 
     code.push_back("LOAD " + std::to_string(startAddress));
     code.push_back("STORE " + std::to_string(itAddress));
 
     code.push_back(startLabel);
+    code.push_back("SUB " + std::to_string(endAddress));
+    code.push_back("JPOS "+ endLabel);
     std::vector<std::string> blockCode = codeBlock->getCode();
     code.insert(code.end(),blockCode.begin(),blockCode.end());
 
     code.push_back("LOAD " + std::to_string(itAddress));
     code.push_back("INC");
     code.push_back("STORE " + std::to_string(itAddress));
-    code.push_back("SUB " + std::to_string(endAddress));
-    std::string endLabel = Label::newLabel();
-    code.push_back("JPOS "+endLabel);
+    
     code.push_back("JUMP " + startLabel);
     code.push_back(endLabel);
 
