@@ -153,5 +153,6 @@ identifier
 
 void FB::Parser::error( const location_type &l, const std::string &err_message )
 {
-   std::cerr << "Error: " << err_message << " at " << l << "\n";
+   std::cerr << "Parse error: " << err_message << " at line " << l.end.line << "\n";
+   exit(1);
 }

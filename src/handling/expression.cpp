@@ -221,41 +221,39 @@ void Expression::multiplyNumberCode(std::vector<std::string>&  code, long long v
 
 void Expression::multiplyVarCode(std::vector<std::string>& code, long long leftAddress, long long rightAddress) {
     long long tempAddress = symbolTable->getFreeAddress();
+    long long signAddress = symbolTable->getFreeAddress();
     long long ONE = symbolTable->generateNumber(1); //address of 1
     long long mONE = symbolTable->generateNumber(-1);   //address of -1
 
-    std::string endLabel = Label::newLabel();
+    std::string endForLabel = Label::newLabel();
     std::string startLabel = Label::newLabel();
     std::string condLabel = Label::newLabel();
     std::string evenLabel = Label::newLabel();
     std::string negLabel = Label::newLabel();
+    std::string negResLabel = Label::newLabel();
+    std::string endLabel = Label::newLabel();
+    
 
     code.push_back("SUB 0");
     code.push_back("STORE " + std::to_string(tempAddress));
 
     //load multiplier
     code.push_back("LOAD " + std::to_string(leftAddress));
+    code.push_back("STORE " + std::to_string(signAddress));
+    code.push_back("JNEG " + negLabel);
+    code.push_back("JUMP " + condLabel);
+
+    code.push_back(negLabel);
+    code.push_back("SUB " + std::to_string(leftAddress));
+    code.push_back("SUB " + std::to_string(leftAddress));
+    code.push_back("STORE " + std::to_string(leftAddress));
 
     //conditions
     code.push_back(condLabel);
-    code.push_back("JNEG " + negLabel);
-
-    //if multiplier positive
-    code.push_back("DEC");  
-    code.push_back("JNEG " + endLabel);
-    code.push_back("JUMP " + startLabel);
-
-    //if multiplier negative
-    code.push_back(negLabel);
-    code.push_back("INC");
-    code.push_back("JPOS " + endLabel);
-    //start
-    code.push_back(startLabel);
+    code.push_back("JZERO " + endForLabel);
 
     // save value
-    code.push_back("INC");
     code.push_back("STORE " + std::to_string(leftAddress));
-
     //check parity
     code.push_back("SHIFT " + std::to_string(mONE));
     code.push_back("SHIFT " + std::to_string(ONE));
@@ -279,8 +277,21 @@ void Expression::multiplyVarCode(std::vector<std::string>& code, long long leftA
     code.push_back("JUMP " + condLabel);
 
     //end
-    code.push_back(endLabel);
+    code.push_back(endForLabel);
+
+    code.push_back("LOAD " + std::to_string(signAddress));
+    code.push_back("JNEG " + negResLabel);
     code.push_back("LOAD " + std::to_string(tempAddress));
+    code.push_back("JUMP " + endLabel);
+
+    code.push_back(negResLabel);
+    code.push_back("LOAD " + std::to_string(tempAddress));
+    code.push_back("SUB " + std::to_string(tempAddress));
+    code.push_back("SUB " + std::to_string(tempAddress));
+
+    code.push_back(endLabel);
+
+    
 }
 
 void Expression::divisionNumberCode(std::vector<std::string>& code, long long varAddress, long long number) {
@@ -325,6 +336,9 @@ void Expression::divisionCode(std::vector<std::string>& code, long long leftAddr
     code.push_back("STORE " + std::to_string(quotientAddress));
     code.push_back("STORE " + std::to_string(remainderAddress));
     code.push_back("STORE " + std::to_string(iteratorAddress));
+    // 0/x = 0, 0%x = 0
+    code.push_back("LOAD " + std::to_string(leftAddress));
+    code.push_back("JZERO " + endLabel);
     //division by 0 gives 0
     code.push_back("LOAD " + std::to_string(rightAddress));
     code.push_back("JZERO " + endLabel);
