@@ -26,6 +26,9 @@ Expression::Expression(SymbolTable* symbolTab, std::string leftValue, std::strin
 };
 
 std::vector<std::string> Expression::getCode() {
+    validateIdentifier(lvalue, true);
+    validateIdentifier(rvalue, true);
+
     std::vector<std::string> code;
 
     long long leftAddress = symbolTable->getAddress(lvalue);
@@ -56,7 +59,7 @@ std::vector<std::string> Expression::getCode() {
     bool rightIsTemp = false;
 
     if(rightAddress == -1) {
-        std::vector<std::string> calculateAddressCode = symbolTable->calculateAddress(lvalue);
+        std::vector<std::string> calculateAddressCode = symbolTable->calculateAddress(rvalue);
         code.insert(code.end(),calculateAddressCode.begin(),calculateAddressCode.end());
         rightPointerAddress = symbolTable->getFreeAddress();
         code.push_back("STORE "+std::to_string(rightPointerAddress));
@@ -122,7 +125,7 @@ std::vector<std::string> Expression::getCode() {
                 code.push_back("LOAD " + std::to_string(symbolTable->generateNumber(std::stoll(lvalue) / std::stoll(rvalue))));
             }
             //right is number
-            else if(rightIsNumber && powerOfTwo(std::stoll(rvalue))) {
+            else if(rightIsNumber && powerOfTwo(std::stoll(rvalue))!=-1) {
                 divisionNumberCode(code, leftAddress, std::stoll(rvalue));
             }
             //both are identifiers - generate mul algorithm
@@ -149,10 +152,10 @@ std::vector<std::string> Expression::getCode() {
             bool rightIsNumber = symbolTable->isNumber(rvalue);
             //both factors are numbers - precompile
             if(leftIsNumber && rightIsNumber) {
-                code.push_back("LOAD " + std::to_string(symbolTable->generateNumber(std::stoll(lvalue) / std::stoll(rvalue))));
+                code.push_back("LOAD " + std::to_string(symbolTable->generateNumber(std::stoll(lvalue) % std::stoll(rvalue))));
             }
             //right is number
-            else if(rightIsNumber && powerOfTwo(std::stoll(rvalue))) {
+            else if(rightIsNumber && powerOfTwo(std::stoll(rvalue))!=-1) {
                 modNumberCode(code, leftAddress, std::stoll(rvalue));
             }
             //both are identifiers - generate mul algorithm
@@ -511,7 +514,6 @@ void Expression::divisionCode(std::vector<std::string>& code, long long leftAddr
         code.push_back("ADD " + std::to_string(rightAddress));
         code.push_back("STORE " + std::to_string(remainderAddress));
 
-        
         //if positive quotient
         code.push_back(positiveSignLabel);
         code.push_back("LOAD " + std::to_string(divisorSignAddress));
@@ -530,11 +532,34 @@ void Expression::divisionCode(std::vector<std::string>& code, long long leftAddr
 }
 
 void Expression::modNumberCode(std::vector<std::string>& code, long long varAddress, long long number) {
+    int power = powerOfTwo(number);
+    long long tempAddress = symbolTable->getFreeAddress();
+
+    code.push_back("LOAD " + std::to_string(varAddress));
+
+    if (power == 0) {
+        return;
+    }
     
+    long long powerAddress = symbolTable->generateNumber(power);
+    long long minusPowerAddress = symbolTable->generateNumber(-power);
+
+    
+    code.push_back("SHIFT " + std::to_string(minusPowerAddress));
+    code.push_back("SHIFT " + std::to_string(powerAddress));
+    code.push_back("STORE " + std::to_string(tempAddress));
+    code.push_back("LOAD " + std::to_string(varAddress));
+    code.push_back("SUB " + std::to_string(tempAddress));
+
+    
+    return;
 }
 
 
 int Expression::powerOfTwo(long long number) {
+        if(number == 0) {
+            return -1;
+        }
         int counter =0;
         while(number){
             if(number == 1) {

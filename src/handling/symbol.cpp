@@ -1,10 +1,11 @@
 #include "symbol.hpp"
 
-Symbol::Symbol(long long memoryAddress) {
+Symbol::Symbol(long long memoryAddress, bool isIterator) {
     address = memoryAddress;
-    type = SymbolType::NUMBER;
+    type = isIterator ? SymbolType::ITERATOR : SymbolType::NUMBER;
     low = 0;
     high = 0;
+    initialized = isIterator ? true : false;
 }
 
 Symbol::Symbol(long long memoryAddress, long long lowerIndex, long long upperIndex) {
@@ -12,6 +13,7 @@ Symbol::Symbol(long long memoryAddress, long long lowerIndex, long long upperInd
     type = SymbolType::ARRAY;
     low = lowerIndex;
     high = upperIndex;
+    initialized = true;
 }
 
 long long Symbol::getAddress() {
@@ -22,4 +24,15 @@ long long Symbol::getLow() {
 }
 long long Symbol::getHigh() {
     return high;
+}
+SymbolType Symbol::getType() {
+    return type;
+}
+
+bool Symbol::getInitialized() {
+    return initialized;
+}
+
+void Symbol::setInitialized(bool b) {
+        initialized = b;
 }

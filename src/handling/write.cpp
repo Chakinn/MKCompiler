@@ -5,6 +5,8 @@ Write::Write(SymbolTable* symbolTable, std::string val) : Node(symbolTable) {
 }
 
 std::vector<std::string> Write::getCode() {
+    validateIdentifier(value, true);
+
     std::vector<std::string> code;
 
     long long address = symbolTable->getAddress(value);

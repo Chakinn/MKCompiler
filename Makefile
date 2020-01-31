@@ -23,7 +23,7 @@ FBELEMENTS =  parser lexer
 FRONTELEMENTS = driver main writer
 FRONTFILES = $(addsuffix .cpp, $(addprefix src/front/, $(FRONTELEMENTS)))
 
-HANDLINGELEMENTS = symbol memory_manager symbol_table node expression assignment label condition branch branch_else while_do do_while for_to for_down_to write read code_block handler 
+HANDLINGELEMENTS = symbol memory_manager symbol_table log node expression assignment label condition branch branch_else while_do do_while for_to for_down_to write read code_block handler 
 HANDLINGFILES = $(addsuffix .cpp, $(addprefix src/handling/, $(HANDLINGELEMETS)))
 
 BACKELEMENTS = optimizer

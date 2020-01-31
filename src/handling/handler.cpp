@@ -10,22 +10,22 @@ Handler::~Handler(){}
 
 std::string Handler::handleVarDeclaration(std::string identifier) {
     if(symbolTable->isDeclared(identifier)) {
-        logError("Variable "+identifier+" was already declared",1);
+        Log::logError("Variable "+identifier+" was already declared",1);
     }
     long long address = memoryManager->allocateVar();
-    symbolTable->declare(identifier, new Symbol(address));
+    symbolTable->declare(identifier, new Symbol(address, false));
     return "vardecl";
 }
 
 std::string Handler::handleArrayDeclaration(std::string identifier, std::string startIndex, std::string endIndex) {
     if(symbolTable->isDeclared(identifier)) {
-        logError("Variable "+identifier+" was already declared",1);
+        Log::logError("Variable "+identifier+" was already declared",1);
     }
     long long low = std::stoll(startIndex);
     long long high = std::stoll(endIndex);
 
     if(high < low) {
-        logError("Wrong array bounds",1);
+        Log::logError("Wrong array bounds",1);
     }
 
     long long address = memoryManager->allocateArray(low,high);
@@ -47,6 +47,11 @@ std::string Handler::handleAssign(std::string identifier, std::string expression
     nodeTable.erase(expressionIdentifier);
     Node* assignment = new Assignment(symbolTable,identifier,expression);
     nodeTable.insert(std::pair<std::string,Node*>(nodeId,assignment));
+
+    try {
+        symbolTable->getSymbol(identifier)->setInitialized(true);
+    }
+    catch(std::exception){}
     
     return nodeId;
 }
@@ -107,8 +112,6 @@ std::string Handler::handleWhile(std::string condtitionIdentifier, bool doFirst)
 
 std::string Handler::handleFor(std::string identifier, std::string start, std::string end, bool down) {
     std::string nodeId = nodeIdentifier();
-    long long address = memoryManager->allocateVar();
-    symbolTable->declare(identifier,new Symbol(address));
 
     Node* forto;
     if (down) {
@@ -125,6 +128,10 @@ std::string Handler::handleFor(std::string identifier, std::string start, std::s
 std::string Handler::handleRead(std::string identifier) {
     std::string nodeId = nodeIdentifier();
     nodeTable.insert(std::make_pair(nodeId, new Read(symbolTable, identifier)));
+    try {
+        symbolTable->getSymbol(identifier)->setInitialized(true);
+    }
+    catch(std::exception){}
     return nodeId;
 }
 
@@ -176,12 +183,9 @@ void Handler::handleProgram() {
 
 }
 
-void Handler::logError(std::string const& errorMessage, int lineNumber) {
-    std::cout << "Error on line: " << lineNumber << ". " << errorMessage << "\n";
-}
+
 
 std::string Handler::nodeIdentifier() {
     nodeCounter++;
     return "ni:"+std::to_string(nodeCounter);
 }
-

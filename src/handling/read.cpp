@@ -5,6 +5,8 @@ Read::Read(SymbolTable* symbolTable, std::string varIdentifier) : Node(symbolTab
 }
 
 std::vector<std::string> Read::getCode() {
+    validateIdentifier(variableIdentifier, false);
+
     std::vector<std::string> code;
 
     long long address = symbolTable->getAddress(variableIdentifier);

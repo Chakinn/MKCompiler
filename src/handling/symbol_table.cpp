@@ -5,8 +5,10 @@ SymbolTable::SymbolTable(MemoryManager* memManager){
 }
 
 bool SymbolTable::isDeclared(std::string const& symbolIdentifier) {
+    int bracketIndex = symbolIdentifier.find_first_of('(');
+    const std::string id = bracketIndex == -1 ? symbolIdentifier : symbolIdentifier.substr(0,bracketIndex);
     try {
-        table.at(symbolIdentifier);
+        table.at(id);
         return true;
     }
     catch (std::out_of_range ex) {
@@ -16,6 +18,10 @@ bool SymbolTable::isDeclared(std::string const& symbolIdentifier) {
 
 void SymbolTable::declare(std::string identifier, Symbol* symbol) {
     table.insert(std::make_pair(identifier,std::unique_ptr<Symbol>(symbol)));
+}
+
+void SymbolTable::undeclare(std::string identifier) {
+    table.erase(identifier);
 }
 
 long long SymbolTable::getAddress(std::string const& symbolIdentifier) {
@@ -28,7 +34,12 @@ long long SymbolTable::getAddress(std::string const& symbolIdentifier) {
     catch(const std::invalid_argument) {
         int bracketIndex = symbolIdentifier.find_first_of('(');
         if (bracketIndex == -1) {
-            address = table.at(symbolIdentifier)->getAddress();
+            try {
+                address = table.at(symbolIdentifier)->getAddress();
+            }
+            catch(const std::out_of_range) {
+                Log::logError("Variable " + symbolIdentifier+" not declared",1);
+            }
         }
         else {
             const std::string id = symbolIdentifier.substr(0,bracketIndex);
@@ -44,8 +55,8 @@ long long SymbolTable::getAddress(std::string const& symbolIdentifier) {
             
             auto symbol = *table.at(id);
             if(index > symbol.getHigh()) {
-                //Handler::logError("Indeks" + num + "poza granicami tablicy " + id + 
-                // "("+std::to_string(symbol.getLow()) + "," +std::to_string(symbol.getHigh()) + ")",1);
+                Log::logError("Indeks" + num + "poza granicami tablicy " + id + 
+                 "("+std::to_string(symbol.getLow()) + "," +std::to_string(symbol.getHigh()) + ")",1);
             }
             address = index + symbol.getAddress() - symbol.getLow();
         }  
@@ -87,6 +98,12 @@ bool SymbolTable::isNumber(std::string value) {
 
 long long SymbolTable::generateNumber(long long number) {
     return memoryManager->generateNumber(number);
+}
+
+Symbol* SymbolTable::getSymbol(std::string const& symbolIdentifier) {
+    int bracketIndex = symbolIdentifier.find_first_of('(');
+    const std::string id = symbolIdentifier.substr(0,bracketIndex);
+    return &*table.at(id);
 }
 
 

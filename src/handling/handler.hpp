@@ -28,6 +28,8 @@
 #include "../back/optimizer.hpp"
 #include "../front/writer.hpp"
 
+#include "log.hpp"
+
 class Handler {
     std::unordered_map<std::string, Node*> nodeTable;
     SymbolTable* symbolTable;
@@ -55,10 +57,11 @@ public:
     std::string handleFirstCommand(std::string nodeId);
     void handleProgram();
 
-    static void logError(std::string const& errorMessage, int lineNumber);
+    
 
 private:
     
     long long nextAddress();
     std::string nodeIdentifier();
+    
 };

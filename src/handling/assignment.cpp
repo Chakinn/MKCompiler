@@ -9,6 +9,8 @@ Assignment::~Assignment() {
 
 }
 std::vector<std::string> Assignment::getCode() {
+    validateIdentifier(id, false);
+    
     std::vector<std::string> code;
 
     long long address = symbolTable->getAddress(id);

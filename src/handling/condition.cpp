@@ -26,7 +26,9 @@ Condition::Condition(SymbolTable* symbolTab, std::string leftValue, std::string 
 };
 
 std::vector<std::string> Condition::getCode() {
-    
+    validateIdentifier(lvalue, true);
+    validateIdentifier(rvalue, true);
+
     std::vector<std::string> code;
 
     //if condition not met - jump to this label
@@ -50,7 +52,7 @@ std::vector<std::string> Condition::getCode() {
     }
     //create right array pointer if left address cannot be determined
     if(rightAddress == -1) {
-        std::vector<std::string> calculateAddressCode = symbolTable->calculateAddress(lvalue);
+        std::vector<std::string> calculateAddressCode = symbolTable->calculateAddress(rvalue);
         code.insert(code.end(),calculateAddressCode.begin(),calculateAddressCode.end());
         rightPointerAddress = symbolTable->getFreeAddress();
         code.push_back("STORE "+std::to_string(rightPointerAddress));
