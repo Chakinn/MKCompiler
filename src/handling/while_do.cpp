@@ -1,6 +1,6 @@
 #include "while_do.hpp"    
     
-WhileDo::WhileDo(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock) : Node(symbolTab) {
+WhileDo::WhileDo(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock, unsigned int position) : Node(symbolTab, position) {
     condition = cond;
     codeBlock = cBlock;
 }

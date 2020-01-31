@@ -1,6 +1,6 @@
 #include "assignment.hpp"
 
-Assignment::Assignment(SymbolTable* symolTab, std::string identifier, Node* expression) : Node(symolTab) {
+Assignment::Assignment(SymbolTable* symolTab, std::string identifier, Node* expression, unsigned int position) : Node(symolTab,position) {
     id = identifier;
     exp = expression;
 }

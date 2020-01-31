@@ -41,18 +41,18 @@ class Handler {
 public:
     Handler();
     ~Handler();
-    std::string handleVarDeclaration(std::string identifier);
-    std::string handleArrayDeclaration(std::string identifier, std::string startIndex, std::string endIndex);
-    std::string handleAssign(std::string identifier, std::string expressonIdentifier);
-    std::string handleIf(std::string conditionIdentifier, bool ifElse);
-    std::string handleWhileDo(std::string condtitionIdentifier);
-    std::string handleWhile(std::string condtitionIdentifier, bool doFirs);
-    std::string handleFor(std::string identifier, std::string start, std::string end, bool down);
+    std::string handleVarDeclaration(std::string identifier, unsigned int position);
+    std::string handleArrayDeclaration(std::string identifier, std::string startIndex, std::string endIndex, unsigned int position);
+    std::string handleAssign(std::string identifier, std::string expressonIdentifier, unsigned int position);
+    std::string handleIf(std::string conditionIdentifier, bool ifElse, unsigned int position);
+    std::string handleWhileDo(std::string condtitionIdentifier, unsigned int position);
+    std::string handleWhile(std::string condtitionIdentifier, bool doFirs, unsigned int position);
+    std::string handleFor(std::string identifier, std::string start, std::string end, bool down, unsigned int position);
 
-    std::string handleRead(std::string identifier);
-    std::string handleWrite(std::string value);
-    std::string handleExpression(std::string value1, std::string op, std::string value2);
-    std::string handleCondition(std::string value1, std::string op, std::string value2);
+    std::string handleRead(std::string identifier, unsigned int position);
+    std::string handleWrite(std::string value, unsigned int position);
+    std::string handleExpression(std::string value1, std::string op, std::string value2, unsigned int position);
+    std::string handleCondition(std::string value1, std::string op, std::string value2, unsigned int position);
     std::string handleCommand(std::string nodeId);
     std::string handleFirstCommand(std::string nodeId);
     void handleProgram();

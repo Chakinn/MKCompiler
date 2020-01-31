@@ -1,6 +1,6 @@
 #include "for_to.hpp"
 
-ForTo::ForTo(SymbolTable* symbolTab, std::string ident, std::string startIndex, std::string endIndex, CodeBlock* cBlock) : Node(symbolTab) {
+ForTo::ForTo(SymbolTable* symbolTab, std::string ident, std::string startIndex, std::string endIndex, CodeBlock* cBlock, unsigned int position) : Node(symbolTab, position) {
     identifier = ident;
     start = startIndex;
     end = endIndex;

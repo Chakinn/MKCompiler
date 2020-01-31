@@ -1,7 +1,7 @@
 #include "condition.hpp"
 
 
-Condition::Condition(SymbolTable* symbolTab, std::string leftValue, std::string operatorr, std::string rightValue) : Node(symbolTab) {
+Condition::Condition(SymbolTable* symbolTab, std::string leftValue, std::string operatorr, std::string rightValue, unsigned int position) : Node(symbolTab,position) {
     lvalue = leftValue;
     rvalue = rightValue;
 

@@ -1,7 +1,7 @@
 #include "expression.hpp"
 #include <iostream>
 
-Expression::Expression(SymbolTable* symbolTab, std::string leftValue, std::string operatorr, std::string rightValue) : Node(symbolTab) {
+Expression::Expression(SymbolTable* symbolTab, std::string leftValue, std::string operatorr, std::string rightValue, unsigned int position) : Node(symbolTab, position) {
     lvalue = leftValue;
     rvalue = rightValue;
 

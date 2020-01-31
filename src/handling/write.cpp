@@ -1,6 +1,6 @@
 #include "write.hpp"
 
-Write::Write(SymbolTable* symbolTable, std::string val) : Node(symbolTable) {
+Write::Write(SymbolTable* symbolTable, std::string val, unsigned int position) : Node(symbolTable, position) {
     value = val;
 }
 

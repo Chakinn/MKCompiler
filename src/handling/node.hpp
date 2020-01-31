@@ -10,8 +10,9 @@
 class Node {
 protected:
     SymbolTable* symbolTable;
+    unsigned int position;
 public:
-    Node(SymbolTable* symbolTable);
+    Node(SymbolTable* symbolTable, unsigned int pos);
     ~Node(){};
     virtual std::vector<std::string> getCode(){std::vector<std::string> a; return a;};
     void validateIdentifier(std::string identifier, bool needInitialized);

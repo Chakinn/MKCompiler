@@ -8,24 +8,24 @@ Handler::Handler() {
 Handler::~Handler(){}
 
 
-std::string Handler::handleVarDeclaration(std::string identifier) {
+std::string Handler::handleVarDeclaration(std::string identifier, unsigned int position) {
     if(symbolTable->isDeclared(identifier)) {
-        Log::logError("Variable "+identifier+" was already declared",1);
+        Log::logError("Variable "+identifier+" was already declared",position);
     }
     long long address = memoryManager->allocateVar();
     symbolTable->declare(identifier, new Symbol(address, false));
     return "vardecl";
 }
 
-std::string Handler::handleArrayDeclaration(std::string identifier, std::string startIndex, std::string endIndex) {
+std::string Handler::handleArrayDeclaration(std::string identifier, std::string startIndex, std::string endIndex, unsigned int position) {
     if(symbolTable->isDeclared(identifier)) {
-        Log::logError("Variable "+identifier+" was already declared",1);
+        Log::logError("Variable "+identifier+" was already declared",position);
     }
     long long low = std::stoll(startIndex);
     long long high = std::stoll(endIndex);
 
     if(high < low) {
-        Log::logError("Wrong array bounds",1);
+        Log::logError("Wrong array bounds",position);
     }
 
     long long address = memoryManager->allocateArray(low,high);
@@ -34,7 +34,7 @@ std::string Handler::handleArrayDeclaration(std::string identifier, std::string 
     return "arrdecl";
 }
 
-std::string Handler::handleAssign(std::string identifier, std::string expressionIdentifier) {
+std::string Handler::handleAssign(std::string identifier, std::string expressionIdentifier, unsigned int position) {
     symbolTable->getAddress(identifier);
     std::string nodeId = nodeIdentifier();
     Node* expression;
@@ -45,7 +45,7 @@ std::string Handler::handleAssign(std::string identifier, std::string expression
         std::cerr<<"expression not found";
     }
     nodeTable.erase(expressionIdentifier);
-    Node* assignment = new Assignment(symbolTable,identifier,expression);
+    Node* assignment = new Assignment(symbolTable,identifier,expression, position);
     nodeTable.insert(std::pair<std::string,Node*>(nodeId,assignment));
 
     try {
@@ -57,7 +57,7 @@ std::string Handler::handleAssign(std::string identifier, std::string expression
 }
 
 
-std::string Handler::handleIf(std::string condtitionIdentifier, bool ifElse) {
+std::string Handler::handleIf(std::string condtitionIdentifier, bool ifElse, unsigned int position) {
     std::string nodeId = nodeIdentifier();
     Node* condtition;
     try {
@@ -71,11 +71,11 @@ std::string Handler::handleIf(std::string condtitionIdentifier, bool ifElse) {
     if(ifElse) {
         CodeBlock* elseBlock = codeBlocks.top();
         codeBlocks.pop();
-        branch = new BranchElse(symbolTable,condtition,codeBlocks.top(),elseBlock);
+        branch = new BranchElse(symbolTable,condtition,codeBlocks.top(),elseBlock, position);
         codeBlocks.pop();
     } 
     else {
-        branch = new Branch(symbolTable,condtition,codeBlocks.top());
+        branch = new Branch(symbolTable,condtition,codeBlocks.top(), position);
         codeBlocks.pop();
     } 
     
@@ -84,7 +84,7 @@ std::string Handler::handleIf(std::string condtitionIdentifier, bool ifElse) {
     return nodeId;
 }
 
-std::string Handler::handleWhile(std::string condtitionIdentifier, bool doFirst) {
+std::string Handler::handleWhile(std::string condtitionIdentifier, bool doFirst, unsigned int position) {
     std::string nodeId = nodeIdentifier();
     Node* conditition;
     try {
@@ -97,10 +97,10 @@ std::string Handler::handleWhile(std::string condtitionIdentifier, bool doFirst)
 
     Node* branch;
     if (doFirst) {
-        branch = new DoWhile(symbolTable,conditition,codeBlocks.top());
+        branch = new DoWhile(symbolTable,conditition,codeBlocks.top(), position);
     }
     else {
-        branch = new WhileDo(symbolTable,conditition,codeBlocks.top());
+        branch = new WhileDo(symbolTable,conditition,codeBlocks.top(), position);
     }
  
     codeBlocks.pop();
@@ -110,24 +110,24 @@ std::string Handler::handleWhile(std::string condtitionIdentifier, bool doFirst)
 }
 
 
-std::string Handler::handleFor(std::string identifier, std::string start, std::string end, bool down) {
+std::string Handler::handleFor(std::string identifier, std::string start, std::string end, bool down, unsigned int position) {
     std::string nodeId = nodeIdentifier();
 
     Node* forto;
     if (down) {
-        forto = new ForDownTo(symbolTable,identifier,start,end,codeBlocks.top());
+        forto = new ForDownTo(symbolTable,identifier,start,end,codeBlocks.top(), position);
     }
     else {
-        forto = new ForTo(symbolTable,identifier,start,end,codeBlocks.top()); 
+        forto = new ForTo(symbolTable,identifier,start,end,codeBlocks.top(), position); 
     }
     codeBlocks.pop();
     nodeTable.insert(std::make_pair(nodeId, forto));
     return nodeId;
 }
 
-std::string Handler::handleRead(std::string identifier) {
+std::string Handler::handleRead(std::string identifier, unsigned int position) {
     std::string nodeId = nodeIdentifier();
-    nodeTable.insert(std::make_pair(nodeId, new Read(symbolTable, identifier)));
+    nodeTable.insert(std::make_pair(nodeId, new Read(symbolTable, identifier, position)));
     try {
         symbolTable->getSymbol(identifier)->setInitialized(true);
     }
@@ -135,21 +135,21 @@ std::string Handler::handleRead(std::string identifier) {
     return nodeId;
 }
 
-std::string Handler::handleWrite(std::string value) {
+std::string Handler::handleWrite(std::string value, unsigned int position) {
     std::string nodeId = nodeIdentifier();
-    nodeTable.insert(std::make_pair(nodeId, new Write(symbolTable, value)));
+    nodeTable.insert(std::make_pair(nodeId, new Write(symbolTable, value, position)));
     return nodeId;
 }
 
-std::string Handler::handleExpression(std::string value1, std::string op, std::string value2) {
+std::string Handler::handleExpression(std::string value1, std::string op, std::string value2, unsigned int position) {
     std::string nodeId = nodeIdentifier();
-    nodeTable.insert(std::make_pair(nodeId, new Expression(symbolTable, value1, op, value2)));
+    nodeTable.insert(std::make_pair(nodeId, new Expression(symbolTable, value1, op, value2, position)));
     return nodeId;
 }
 
-std::string Handler::handleCondition(std::string value1, std::string op, std::string value2) {
+std::string Handler::handleCondition(std::string value1, std::string op, std::string value2, unsigned int position) {
     std::string nodeId = nodeIdentifier();
-    nodeTable.insert(std::make_pair(nodeId, new Condition(symbolTable, value1, op, value2)));
+    nodeTable.insert(std::make_pair(nodeId, new Condition(symbolTable, value1, op, value2, position)));
     return nodeId;
 }
 

@@ -1,6 +1,6 @@
 #include "branch_else.hpp"
 
-BranchElse::BranchElse(SymbolTable* symbolTab, Node* cond, CodeBlock* ifBlock, CodeBlock* elseBlock) : Node(symbolTab) {
+BranchElse::BranchElse(SymbolTable* symbolTab, Node* cond, CodeBlock* ifBlock, CodeBlock* elseBlock, unsigned int position) : Node(symbolTab, position) {
     condition= cond;
     ifCodeBlock = ifBlock;
     elseCodeBlock = elseBlock;

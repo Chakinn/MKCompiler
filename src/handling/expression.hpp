@@ -11,7 +11,7 @@ class Expression : public Node {
     std::string rvalue;
 
 public:
-    Expression(SymbolTable* symbolTab, std::string leftValue, std::string operatorr, std::string rightValue);
+    Expression(SymbolTable* symbolTab, std::string leftValue, std::string operatorr, std::string rightValue, unsigned int position);
     virtual ~Expression(){};
 
     std::vector<std::string> getCode();

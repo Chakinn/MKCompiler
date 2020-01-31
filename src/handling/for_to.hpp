@@ -11,7 +11,7 @@ protected:
     std::string end;
     CodeBlock* codeBlock;
 public:
-    ForTo(SymbolTable* symbolTab, std::string identifier, std::string startIndex, std::string endIndex, CodeBlock* cBlock);
+    ForTo(SymbolTable* symbolTab, std::string identifier, std::string startIndex, std::string endIndex, CodeBlock* cBlock, unsigned int position);
     ~ForTo();
 
     virtual std::vector<std::string> getCode();

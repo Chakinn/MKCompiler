@@ -9,7 +9,7 @@ protected:
     Node* condition;
     CodeBlock* codeBlock;
 public:
-    WhileDo(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock);
+    WhileDo(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock, unsigned int position);
     ~WhileDo(){}
 
     virtual std::vector<std::string> getCode();

@@ -12,7 +12,7 @@ class Condition : public Node {
     
 
 public:
-    Condition(SymbolTable* symbolTab, std::string leftValue, std::string operatorr, std::string rightValue);
+    Condition(SymbolTable* symbolTab, std::string leftValue, std::string operatorr, std::string rightValue, unsigned int position);
     virtual ~Condition(){};
 
     std::vector<std::string> getCode();

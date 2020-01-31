@@ -1,6 +1,6 @@
 #include "do_while.hpp"    
     
-DoWhile::DoWhile(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock) : WhileDo(symbolTab, cond, cBlock) {}
+DoWhile::DoWhile(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock, unsigned int position) : WhileDo(symbolTab, cond, cBlock, position) {}
 
 std::vector<std::string> DoWhile::getCode() {
     std::vector<std::string> code;

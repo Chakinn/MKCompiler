@@ -8,7 +8,7 @@
 class DoWhile : public WhileDo {
 
 public:
-    DoWhile(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock);
+    DoWhile(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock, unsigned int position);
     ~DoWhile(){}
 
     std::vector<std::string> getCode();

@@ -1,6 +1,6 @@
 #include "read.hpp"
 
-Read::Read(SymbolTable* symbolTable, std::string varIdentifier) : Node(symbolTable) {
+Read::Read(SymbolTable* symbolTable, std::string varIdentifier, unsigned int position) : Node(symbolTable, position) {
     variableIdentifier = varIdentifier;
 }
 

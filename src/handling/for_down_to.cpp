@@ -1,6 +1,6 @@
 #include "for_down_to.hpp"
 
-ForDownTo::ForDownTo(SymbolTable* symbolTab, std::string ident, std::string startIndex, std::string endIndex, CodeBlock* cBlock) : Node(symbolTab) {
+ForDownTo::ForDownTo(SymbolTable* symbolTab, std::string ident, std::string startIndex, std::string endIndex, CodeBlock* cBlock, unsigned int position) : Node(symbolTab, position) {
     identifier = ident;
     start = startIndex;
     end = endIndex;

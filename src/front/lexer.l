@@ -7,6 +7,7 @@
 /* typedef to make the returns for the tokens shorter */
 using token = FB::Parser::token;
 
+
 /* define yyterminate as this instead of NULL */
 #define yyterminate() return (token::END_FILE)
 
@@ -24,7 +25,8 @@ using token = FB::Parser::token;
     yylval = lval;
 %}
 \[ {skipComment();}
-[ \t\n] //skip whitespaces and newlines
+[ \t] //skip whitespaces and newlines
+[\n]    {loc->lines();}
 
 -?[0-9]+ {*yylval = yytext;return token::NUM;}
 [_a-z]+ {*yylval = yytext;return token::PIDENTIFIER;}

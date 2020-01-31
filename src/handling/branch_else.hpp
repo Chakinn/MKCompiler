@@ -10,7 +10,7 @@ class BranchElse : public Node {
     CodeBlock* ifCodeBlock;
     CodeBlock* elseCodeBlock;
 public:
-    BranchElse(SymbolTable* symbolTab, Node* cond, CodeBlock* ifBlock, CodeBlock* elseBlock);
+    BranchElse(SymbolTable* symbolTab, Node* cond, CodeBlock* ifBlock, CodeBlock* elseBlock, unsigned int position);
     ~BranchElse();
 
     std::vector<std::string> getCode();

@@ -8,7 +8,7 @@ class Branch : public Node {
     Node* condition;
     CodeBlock* codeBlock;
 public:
-    Branch(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock);
+    Branch(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock, unsigned int position);
     ~Branch();
 
     std::vector<std::string> getCode();

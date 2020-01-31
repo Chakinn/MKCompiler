@@ -1,6 +1,6 @@
 #include "branch.hpp"
 
-Branch::Branch(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock) : Node(symbolTab) {
+Branch::Branch(SymbolTable* symbolTab, Node* cond, CodeBlock* cBlock, unsigned int position) : Node(symbolTab, position) {
     condition= cond;
     codeBlock = cBlock;
 }
